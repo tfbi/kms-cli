@@ -8,9 +8,9 @@
 
 - `kms me`：查询当前用户信息。
 - `kms kbs`：分页获取当前用户有权限访问的知识库列表。
-- `kms channels <knowledge_base_id>`：获取指定知识库下的渠道列表。知识库和渠道是父子关系，一个知识库下可以有多个渠道。
-- `kms faqs <channel_id>`：分页获取指定渠道下的 FAQ 列表。
-- `kms faq <faq_id>`：获取指定 FAQ 的详情。
+- `kms channels <knowledgeId>`：获取指定知识库下的渠道列表。知识库和渠道是父子关系，一个知识库下可以有多个渠道。
+- `kms faqs <channelId>`：分页获取指定渠道下的 FAQ 列表。
+- `kms faq <faqId>`：获取指定 FAQ 的详情。
 
 ## 范围
 
@@ -95,7 +95,7 @@ token 按以下优先级读取：
 
 - 安全拼接 `base_url` 和接口路径。
 - 根据接口配置选择 `GET` 或 `POST`。
-- 对 `GET` 请求使用普通 query 参数，不使用路径参数。例如渠道列表传 `knowledge_base_id`，FAQ 详情传 `faq_id`。
+- 对 `GET` 请求使用普通 query 参数，不使用路径参数。例如渠道列表传 `knowledgeId`，FAQ 详情传 `faqId`。
 - 对 `POST` 请求使用 JSON body 传参。
 - 在请求头里带上 token。
 - 解析 JSON 响应。
@@ -104,10 +104,10 @@ token 按以下优先级读取：
 接口请求规则：
 
 - 查询用户信息：`GET` 请求，第一版默认不传业务参数。
-- 获取知识库列表：`POST` 请求，body 里传分页参数。
-- 获取渠道列表：`GET` 请求，query 参数传知识库 ID。
-- 获取 FAQ 列表：`POST` 请求，body 里传分页参数和渠道 ID。
-- 获取 FAQ 详情：`GET` 请求，query 参数传 FAQ ID。
+- 获取知识库列表：`POST` 请求，body 里传 `pageNo` 和 `pageSize`。
+- 获取渠道列表：`GET` 请求，query 参数传 `knowledgeId`。
+- 获取 FAQ 列表：`POST` 请求，body 里传 `channelId`、`pageNo` 和 `pageSize`。
+- 获取 FAQ 详情：`GET` 请求，query 参数传 `faqId`。
 
 第一版默认使用 Bearer Token：
 
@@ -123,9 +123,9 @@ Authorization: Bearer <token>
 
 - `kms me`：打印主要用户字段。
 - `kms kbs`：展示知识库 ID、名称等摘要字段。
-- `kms channels <knowledge_base_id>`：展示指定知识库下的渠道 ID、名称等摘要字段。
-- `kms faqs <channel_id>`：展示 FAQ ID 和标题。
-- `kms faq <faq_id>`：展示完整 FAQ 详情，格式保持清晰易读。
+- `kms channels <knowledgeId>`：展示指定知识库下的渠道 ID、名称等摘要字段。
+- `kms faqs <channelId>`：展示 FAQ ID 和标题。
+- `kms faq <faqId>`：展示完整 FAQ 详情，格式保持清晰易读。
 
 所有命令都支持 `--json`，用于输出解析后的原始 JSON 数据，不额外格式化。这样既方便脚本处理，也可以避免默认文本格式遗漏接口返回字段。
 
@@ -149,8 +149,8 @@ CLI 不应该在错误信息、日志或异常堆栈中打印 token。
 
 - 配置文件读取和必填字段校验。
 - 环境变量 token 与配置文件 token 的优先级。
-- `GET` 请求使用 query 参数传递知识库 ID 和 FAQ ID。
-- `POST` 请求使用 JSON body 传递分页参数，以及 FAQ 列表所需的渠道 ID。
+- `GET` 请求使用 query 参数传递 `knowledgeId` 和 `faqId`。
+- `POST` 请求使用 JSON body 传递 `pageNo`、`pageSize`，以及 FAQ 列表所需的 `channelId`。
 - 认证失败后，手动输入新 token 并重试。
 - CLI 命令分发和 `--json` 输出。
 - 配置缺失、非成功响应等错误信息。
@@ -163,7 +163,5 @@ HTTP 测试应使用 mock transport，不请求真实内部服务。
 
 - 真实的 `base_url`。
 - 真实的 5 个接口路径。
-- 分页参数的真实字段名，例如 `page` / `page_size` 或 `pageNo` / `pageSize`。
-- 知识库 ID、渠道 ID、FAQ ID 的真实参数名。
 - 如果不是 `Authorization: Bearer <token>`，需要确认真实认证请求头格式。
 - 用于默认文本输出的响应字段名，例如用户名称、知识库名称、渠道名称、FAQ 标题等。

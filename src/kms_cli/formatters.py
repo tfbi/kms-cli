@@ -20,7 +20,16 @@ def format_records(data: dict[str, Any], *, title: str) -> str:
     lines = [f"{title}:"]
     for record in records:
         if isinstance(record, dict):
-            record_id = _pick(record, "id", "faq_id", "channel_id", "knowledge_base_id")
+            record_id = _pick(
+                record,
+                "id",
+                "faqId",
+                "faq_id",
+                "channelId",
+                "channel_id",
+                "knowledgeId",
+                "knowledge_base_id",
+            )
             name = _pick(record, "name", "title")
             if record_id and name:
                 lines.append(f"- {record_id}\t{name}")

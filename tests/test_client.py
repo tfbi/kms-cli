@@ -37,7 +37,7 @@ def test_get_channels_uses_query_params():
     assert client.channels("kb-1") == {"items": []}
     assert seen["method"] == "GET"
     assert seen["authorization"] == "Bearer abc"
-    assert seen["url"] == "https://kms.example.test/channels?knowledge_base_id=kb-1"
+    assert seen["url"] == "https://kms.example.test/channels?knowledgeId=kb-1"
 
 
 def test_post_faqs_uses_json_body_with_pagination():
@@ -55,7 +55,7 @@ def test_post_faqs_uses_json_body_with_pagination():
 
     assert seen["method"] == "POST"
     assert seen["content_type"].startswith("application/json")
-    assert seen["body"] == {"channel_id": "ch-1", "page": 2, "page_size": 50}
+    assert seen["body"] == {"channelId": "ch-1", "pageNo": 2, "pageSize": 50}
 
 
 def test_raises_auth_error_for_401():

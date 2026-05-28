@@ -87,10 +87,19 @@ $env:KNOWLEDGE_TOKEN = "在这里粘贴-token"
 ```bash
 kms me
 kms kbs --page 1 --page-size 20
-kms channels <knowledge_base_id>
-kms faqs <channel_id> --page 1 --page-size 20
-kms faq <faq_id>
+kms channels <knowledgeId>
+kms faqs <channelId> --page 1 --page-size 20
+kms faq <faqId>
 ```
+
+## 请求参数
+
+CLI 会按以下字段名请求内部接口：
+
+- 知识库列表：POST body 传 `pageNo`、`pageSize`
+- 渠道列表：GET query 传 `knowledgeId`
+- FAQ 列表：POST body 传 `channelId`、`pageNo`、`pageSize`
+- FAQ 详情：GET query 传 `faqId`
 
 任意命令都可以追加 `--json` 输出原始 JSON：
 

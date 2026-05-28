@@ -51,19 +51,19 @@ class KnowledgeClient:
         return self._request("me")
 
     def kbs(self, *, page: int = 1, page_size: int = 20) -> dict[str, Any]:
-        return self._request("kbs", json_body={"page": page, "page_size": page_size})
+        return self._request("kbs", json_body={"pageNo": page, "pageSize": page_size})
 
     def channels(self, knowledge_base_id: str) -> dict[str, Any]:
-        return self._request("channels", params={"knowledge_base_id": knowledge_base_id})
+        return self._request("channels", params={"knowledgeId": knowledge_base_id})
 
     def faqs(self, channel_id: str, *, page: int = 1, page_size: int = 20) -> dict[str, Any]:
         return self._request(
             "faqs",
-            json_body={"channel_id": channel_id, "page": page, "page_size": page_size},
+            json_body={"channelId": channel_id, "pageNo": page, "pageSize": page_size},
         )
 
     def faq_detail(self, faq_id: str) -> dict[str, Any]:
-        return self._request("faq_detail", params={"faq_id": faq_id})
+        return self._request("faq_detail", params={"faqId": faq_id})
 
     def _request(
         self,
