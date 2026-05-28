@@ -1,4 +1,5 @@
 from pathlib import Path
+import tomllib
 
 import pytest
 
@@ -110,3 +111,39 @@ path = "/faq"
 
     assert 'token = "new-token"' in config_path.read_text(encoding="utf-8")
     assert 'token = "old"' not in config_path.read_text(encoding="utf-8")
+
+
+def test_save_token_does_not_replace_nested_table_token(tmp_path):
+    config_path = write_config(
+        tmp_path / "config.toml",
+        """
+base_url = "https://kms.example.test"
+
+[endpoints.me]
+token = "nested"
+method = "GET"
+path = "/me"
+""",
+    )
+
+    save_token(config_path, "root-token")
+
+    text = config_path.read_text(encoding="utf-8")
+    assert text.startswith('token = "root-token"\n')
+    assert 'token = "nested"' in text
+
+
+def test_save_token_escapes_control_characters_as_valid_toml(tmp_path):
+    config_path = write_config(
+        tmp_path / "config.toml",
+        """
+base_url = "https://kms.example.test"
+token = "old"
+""",
+    )
+    token = "line1\nline2\tend"
+
+    save_token(config_path, token)
+
+    raw = tomllib.loads(config_path.read_text(encoding="utf-8"))
+    assert raw["token"] == token

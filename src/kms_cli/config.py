@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 from pathlib import Path
 import re
 import tomllib
@@ -66,14 +67,25 @@ def load_config(path: Path = DEFAULT_CONFIG_PATH) -> KmsConfig:
 
 def save_token(path: Path, token: str) -> None:
     text = path.read_text(encoding="utf-8") if path.exists() else ""
-    token_line = f'token = "{_escape_toml_string(token)}"'
-    if re.search(r'^token\s*=\s*".*"$', text, flags=re.MULTILINE):
-        text = re.sub(r'^token\s*=\s*".*"$', token_line, text, flags=re.MULTILINE)
-    else:
+    token_line = f"token = {_escape_toml_string(token)}"
+    lines = text.splitlines(keepends=True)
+    root_token_updated = False
+
+    for index, line in enumerate(lines):
+        if line.lstrip().startswith("["):
+            break
+        if re.match(r"^\s*token\s*=", line):
+            line_ending = "\n" if line.endswith("\n") else ""
+            lines[index] = token_line + line_ending
+            text = "".join(lines)
+            root_token_updated = True
+            break
+    if not root_token_updated:
         text = token_line + "\n" + text
+
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
 
 
 def _escape_toml_string(value: str) -> str:
-    return value.replace("\\", "\\\\").replace('"', '\\"')
+    return json.dumps(value, ensure_ascii=False)
