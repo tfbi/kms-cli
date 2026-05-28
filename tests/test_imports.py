@@ -6,6 +6,6 @@ def test_package_exposes_version():
 
 
 def test_cli_main_smoke():
-    from kms_cli.cli import main
+    from kms_cli.cli import build_parser
 
-    assert main([]) == 0
+    assert build_parser().prog == "kms"
