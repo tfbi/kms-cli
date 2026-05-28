@@ -3,3 +3,9 @@ def test_package_exposes_version():
 
     assert isinstance(kms_cli.__version__, str)
     assert kms_cli.__version__
+
+
+def test_cli_main_smoke():
+    from kms_cli.cli import main
+
+    assert main([]) == 0
