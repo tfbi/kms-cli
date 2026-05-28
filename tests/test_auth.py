@@ -1,8 +1,11 @@
 from pathlib import Path
 import tomllib
 
-from kms_cli.auth import TokenManager
+import pytest
+
+from kms_cli.auth import TokenManager, _confirm_yes
 from kms_cli.config import KmsConfig
+from kms_cli.errors import AuthError
 
 
 def make_config(tmp_path: Path, token: str | None = "config-token") -> KmsConfig:
@@ -60,6 +63,21 @@ def test_prompts_when_no_token(monkeypatch, tmp_path):
     assert manager.source == "prompt"
 
 
+@pytest.mark.parametrize("config_token", [None, "   "])
+@pytest.mark.parametrize("prompted_token", ["", "   "])
+def test_empty_prompted_token_raises_auth_error(
+    monkeypatch, tmp_path, config_token, prompted_token
+):
+    monkeypatch.delenv("KNOWLEDGE_TOKEN", raising=False)
+    manager = TokenManager(
+        make_config(tmp_path, token=config_token),
+        input_func=lambda prompt: prompted_token,
+    )
+
+    with pytest.raises(AuthError, match="token 不能为空"):
+        manager.get_token()
+
+
 def test_refresh_updates_current_token_without_printing_old_token(monkeypatch, tmp_path):
     monkeypatch.delenv("KNOWLEDGE_TOKEN", raising=False)
     prompts: list[str] = []
@@ -114,6 +132,20 @@ def test_refresh_persists_new_token_when_confirmed(monkeypatch, tmp_path):
 
     parsed = tomllib.loads(config_path.read_text(encoding="utf-8"))
     assert parsed["token"] == "new-token"
+
+
+@pytest.mark.parametrize("answer", ["y", "Y", "yes", "YES", "YeS"])
+def test_confirm_yes_accepts_yes_answers_case_insensitively(monkeypatch, answer):
+    monkeypatch.setattr("builtins.input", lambda prompt: answer)
+
+    assert _confirm_yes("Save token? ") is True
+
+
+@pytest.mark.parametrize("answer", ["", "n", "no", "NO", "anything else"])
+def test_confirm_yes_rejects_empty_and_no_like_answers(monkeypatch, answer):
+    monkeypatch.setattr("builtins.input", lambda prompt: answer)
+
+    assert _confirm_yes("Save token? ") is False
 
 
 def test_refresh_before_get_token_with_prompt_source_prompts_once(monkeypatch, tmp_path):
