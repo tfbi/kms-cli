@@ -23,19 +23,22 @@ class TokenManager:
         self._token: str | None = None
 
     def get_token(self) -> str:
-        if self._token:
-            return self._token
+        token = _normalize_token(self._token)
+        if token:
+            self._token = token
+            return token
 
-        env_token = os.getenv("KNOWLEDGE_TOKEN")
+        env_token = _normalize_token(os.getenv("KNOWLEDGE_TOKEN"))
         if env_token:
             self.source = "env"
             self._token = env_token
             return env_token
 
-        if self.config.token:
+        config_token = _normalize_token(self.config.token)
+        if config_token:
             self.source = "config"
-            self._token = self.config.token
-            return self.config.token
+            self._token = config_token
+            return config_token
 
         token = self._prompt_token()
         self.source = "prompt"
@@ -51,10 +54,17 @@ class TokenManager:
         return token
 
     def _prompt_token(self, prompt: str = "请输入 token: ") -> str:
-        token = self.input_func(prompt).strip()
+        token = _normalize_token(self.input_func(prompt))
         if not token:
             raise AuthError("token 不能为空")
         return token
+
+
+def _normalize_token(value: str | None) -> str | None:
+    if value is None:
+        return None
+    token = value.strip()
+    return token or None
 
 
 def _confirm_yes(prompt: str) -> bool:

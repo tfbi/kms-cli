@@ -1,4 +1,5 @@
 from pathlib import Path
+import tomllib
 
 from kms_cli.auth import TokenManager
 from kms_cli.config import KmsConfig
@@ -14,7 +15,7 @@ def make_config(tmp_path: Path, token: str | None = "config-token") -> KmsConfig
 
 
 def test_environment_token_wins(monkeypatch, tmp_path):
-    monkeypatch.setenv("KNOWLEDGE_TOKEN", "env-token")
+    monkeypatch.setenv("KNOWLEDGE_TOKEN", "  env-token  ")
     manager = TokenManager(make_config(tmp_path), input_func=lambda _: "prompt-token")
 
     assert manager.get_token() == "env-token"
@@ -23,17 +24,36 @@ def test_environment_token_wins(monkeypatch, tmp_path):
 
 def test_config_token_used_when_env_missing(monkeypatch, tmp_path):
     monkeypatch.delenv("KNOWLEDGE_TOKEN", raising=False)
+    manager = TokenManager(make_config(tmp_path, token="  config-token  "))
+
+    assert manager.get_token() == "config-token"
+    assert manager.source == "config"
+
+
+def test_whitespace_environment_token_falls_back_to_config(monkeypatch, tmp_path):
+    monkeypatch.setenv("KNOWLEDGE_TOKEN", "   ")
     manager = TokenManager(make_config(tmp_path, token="config-token"))
 
     assert manager.get_token() == "config-token"
     assert manager.source == "config"
 
 
+def test_whitespace_config_token_falls_back_to_prompt(monkeypatch, tmp_path):
+    monkeypatch.delenv("KNOWLEDGE_TOKEN", raising=False)
+    manager = TokenManager(
+        make_config(tmp_path, token="   "),
+        input_func=lambda prompt: "manual-token",
+    )
+
+    assert manager.get_token() == "manual-token"
+    assert manager.source == "prompt"
+
+
 def test_prompts_when_no_token(monkeypatch, tmp_path):
     monkeypatch.delenv("KNOWLEDGE_TOKEN", raising=False)
     manager = TokenManager(
         make_config(tmp_path, token=None),
-        input_func=lambda prompt: "manual-token",
+        input_func=lambda prompt: "  manual-token  ",
     )
 
     assert manager.get_token() == "manual-token"
@@ -42,11 +62,35 @@ def test_prompts_when_no_token(monkeypatch, tmp_path):
 
 def test_refresh_updates_current_token_without_printing_old_token(monkeypatch, tmp_path):
     monkeypatch.delenv("KNOWLEDGE_TOKEN", raising=False)
+    prompts: list[str] = []
+
+    def capture_prompt(prompt: str) -> str:
+        prompts.append(prompt)
+        return "new-token"
+
     manager = TokenManager(
         make_config(tmp_path, token="old-token"),
-        input_func=lambda prompt: "new-token",
+        input_func=capture_prompt,
         confirm_func=lambda prompt: False,
     )
 
     assert manager.refresh_token() == "new-token"
     assert manager.get_token() == "new-token"
+    assert prompts
+    assert "old-token" not in prompts[0]
+
+
+def test_refresh_persists_new_token_when_confirmed(monkeypatch, tmp_path):
+    monkeypatch.delenv("KNOWLEDGE_TOKEN", raising=False)
+    config_path = tmp_path / "config.toml"
+    config_path.write_text('base_url = "https://kms.example.test"\n', encoding="utf-8")
+    manager = TokenManager(
+        make_config(tmp_path, token="old-token"),
+        input_func=lambda prompt: "new-token",
+        confirm_func=lambda prompt: True,
+    )
+
+    assert manager.refresh_token() == "new-token"
+
+    parsed = tomllib.loads(config_path.read_text(encoding="utf-8"))
+    assert parsed["token"] == "new-token"
