@@ -14,7 +14,7 @@ def make_config() -> KmsConfig:
         token=None,
         endpoints={
             "me": EndpointConfig("GET", "/me"),
-            "spaces": EndpointConfig("POST", "/spaces"),
+            "kbs": EndpointConfig("POST", "/kbs"),
             "channels": EndpointConfig("GET", "/channels"),
             "faqs": EndpointConfig("POST", "/faqs"),
             "faq_detail": EndpointConfig("GET", "/faq"),

@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-import sys
 
 import httpx
 
@@ -15,9 +14,9 @@ token = "abc"
 method = "GET"
 path = "/me"
 
-[endpoints.knowledge_bases]
+[endpoints.kbs]
 method = "POST"
-path = "/spaces"
+path = "/kbs"
 
 [endpoints.channels]
 method = "GET"
@@ -54,7 +53,7 @@ def test_me_outputs_json(tmp_path, capsys):
     assert '"张三"' in capsys.readouterr().out
 
 
-def test_knowledge_bases_sends_pagination(tmp_path):
+def test_kbs_sends_pagination(tmp_path):
     config_path = write_config(tmp_path)
     seen = {}
 
@@ -63,7 +62,7 @@ def test_knowledge_bases_sends_pagination(tmp_path):
         return httpx.Response(200, json={"items": []})
 
     code = main(
-        ["--config", str(config_path), "knowledge-bases", "--page", "3", "--page-size", "40"],
+        ["--config", str(config_path), "kbs", "--page", "3", "--page-size", "40"],
         transport=httpx.MockTransport(handler),
     )
 
@@ -71,52 +70,28 @@ def test_knowledge_bases_sends_pagination(tmp_path):
     assert seen["body"] == {"page": 3, "page_size": 40}
 
 
-def test_spaces_alias_still_sends_pagination(tmp_path):
-    config_path = write_config(tmp_path)
-    seen = {}
-
-    def handler(request: httpx.Request) -> httpx.Response:
-        seen["body"] = json.loads(request.content)
-        return httpx.Response(200, json={"items": []})
-
-    code = main(
-        ["--config", str(config_path), "spaces", "--page", "3", "--page-size", "40"],
-        transport=httpx.MockTransport(handler),
-    )
-
-    assert code == 0
-    assert seen["body"] == {"page": 3, "page_size": 40}
-
-
-def test_spaces_alias_works_from_process_argv(tmp_path, monkeypatch):
-    config_path = write_config(tmp_path)
-    seen = {}
-
-    def handler(request: httpx.Request) -> httpx.Response:
-        seen["body"] = json.loads(request.content)
-        return httpx.Response(200, json={"items": []})
-
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        ["kms", "--config", str(config_path), "spaces", "--page", "4", "--page-size", "30"],
-    )
-
-    code = main(transport=httpx.MockTransport(handler))
-
-    assert code == 0
-    assert seen["body"] == {"page": 4, "page_size": 30}
-
-
-def test_help_promotes_knowledge_bases_command(capsys):
+def test_help_promotes_kbs_command(capsys):
     try:
         main(["--help"])
     except SystemExit as exc:
         assert exc.code == 0
 
     output = capsys.readouterr().out
-    assert "knowledge-bases" in output
+    assert "kbs" in output
+    assert "knowledge-bases" not in output
     assert "spaces" not in output
+
+
+def test_old_knowledge_base_commands_are_not_supported(tmp_path):
+    config_path = write_config(tmp_path)
+
+    for command in ("knowledge-bases", "spaces"):
+        try:
+            main(["--config", str(config_path), command])
+        except SystemExit as exc:
+            assert exc.code == 2
+        else:
+            raise AssertionError(f"旧命令应该不可用: {command}")
 
 
 def test_channels_sends_query_parameter(tmp_path):

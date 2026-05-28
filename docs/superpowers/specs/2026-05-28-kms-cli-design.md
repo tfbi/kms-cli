@@ -7,7 +7,7 @@
 第一版提供 5 个命令：
 
 - `kms me`：查询当前用户信息。
-- `kms knowledge-bases`：分页获取当前用户有权限访问的知识库列表。
+- `kms kbs`：分页获取当前用户有权限访问的知识库列表。
 - `kms channels <knowledge_base_id>`：获取指定知识库下的渠道列表。知识库和渠道是父子关系，一个知识库下可以有多个渠道。
 - `kms faqs <channel_id>`：分页获取指定渠道下的 FAQ 列表。
 - `kms faq <faq_id>`：获取指定 FAQ 的详情。
@@ -49,9 +49,9 @@ token = "..."
 method = "GET"
 path = "/api/me"
 
-[endpoints.knowledge_bases]
+[endpoints.kbs]
 method = "POST"
-path = "/api/knowledge-bases"
+path = "/api/kbs"
 
 [endpoints.channels]
 method = "GET"
@@ -122,7 +122,7 @@ Authorization: Bearer <token>
 默认输出为适合人阅读的文本：
 
 - `kms me`：打印主要用户字段。
-- `kms knowledge-bases`：展示知识库 ID、名称等摘要字段。
+- `kms kbs`：展示知识库 ID、名称等摘要字段。
 - `kms channels <knowledge_base_id>`：展示指定知识库下的渠道 ID、名称等摘要字段。
 - `kms faqs <channel_id>`：展示 FAQ ID 和标题。
 - `kms faq <faq_id>`：展示完整 FAQ 详情，格式保持清晰易读。

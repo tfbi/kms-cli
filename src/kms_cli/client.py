@@ -50,8 +50,8 @@ class KnowledgeClient:
     def me(self) -> dict[str, Any]:
         return self._request("me")
 
-    def spaces(self, *, page: int = 1, page_size: int = 20) -> dict[str, Any]:
-        return self._request("spaces", json_body={"page": page, "page_size": page_size})
+    def kbs(self, *, page: int = 1, page_size: int = 20) -> dict[str, Any]:
+        return self._request("kbs", json_body={"page": page, "page_size": page_size})
 
     def channels(self, knowledge_base_id: str) -> dict[str, Any]:
         return self._request("channels", params={"knowledge_base_id": knowledge_base_id})

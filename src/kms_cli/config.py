@@ -10,10 +10,7 @@ import tomllib
 from .errors import ConfigError
 
 DEFAULT_CONFIG_PATH = Path.home() / ".kms" / "config.toml"
-REQUIRED_ENDPOINTS = ("me", "spaces", "channels", "faqs", "faq_detail")
-ENDPOINT_ALIASES = {
-    "spaces": ("knowledge_bases", "spaces"),
-}
+REQUIRED_ENDPOINTS = ("me", "kbs", "channels", "faqs", "faq_detail")
 
 
 @dataclass(frozen=True)
@@ -57,9 +54,9 @@ def load_config(path: Path = DEFAULT_CONFIG_PATH) -> KmsConfig:
 
     endpoints: dict[str, EndpointConfig] = {}
     for name in REQUIRED_ENDPOINTS:
-        item = _get_endpoint(raw_endpoints, name)
+        item = raw_endpoints.get(name)
         if not isinstance(item, dict):
-            raise ConfigError(f"缺少接口配置: endpoints.{_display_endpoint_name(name)}")
+            raise ConfigError(f"缺少接口配置: endpoints.{name}")
         method = str(item.get("method", "")).upper().strip()
         endpoint_path = str(item.get("path", "")).strip()
         if method not in {"GET", "POST"}:
@@ -108,14 +105,3 @@ def save_token(path: Path, token: str) -> None:
 
 def _escape_toml_string(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
-
-
-def _get_endpoint(raw_endpoints: dict[str, object], name: str) -> object:
-    for endpoint_name in ENDPOINT_ALIASES.get(name, (name,)):
-        if endpoint_name in raw_endpoints:
-            return raw_endpoints[endpoint_name]
-    return None
-
-
-def _display_endpoint_name(name: str) -> str:
-    return ENDPOINT_ALIASES.get(name, (name,))[0]

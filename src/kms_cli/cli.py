@@ -25,9 +25,9 @@ def build_parser() -> argparse.ArgumentParser:
     me = subparsers.add_parser("me", help="查询当前用户信息")
     me.add_argument("--json", action="store_true", dest="as_json", help="输出原始 JSON")
 
-    knowledge_bases = subparsers.add_parser("knowledge-bases", help="分页获取知识库列表")
-    _add_pagination(knowledge_bases)
-    knowledge_bases.add_argument("--json", action="store_true", dest="as_json", help="输出原始 JSON")
+    kbs = subparsers.add_parser("kbs", help="分页获取知识库列表")
+    _add_pagination(kbs)
+    kbs.add_argument("--json", action="store_true", dest="as_json", help="输出原始 JSON")
 
     channels = subparsers.add_parser("channels", help="获取指定知识库下的渠道列表")
     channels.add_argument("knowledge_base_id", help="知识库 ID")
@@ -53,8 +53,7 @@ def main(
     confirm_func=None,
 ) -> int:
     parser = build_parser()
-    raw_argv = sys.argv[1:] if argv is None else argv
-    args = parser.parse_args(_normalize_legacy_command(raw_argv))
+    args = parser.parse_args(argv)
 
     try:
         config = load_config(args.config)
@@ -77,8 +76,8 @@ def main(
 def _execute(args: argparse.Namespace, client: KnowledgeClient) -> dict[str, Any]:
     if args.command == "me":
         return client.me()
-    if args.command == "knowledge-bases":
-        return client.spaces(page=args.page, page_size=args.page_size)
+    if args.command == "kbs":
+        return client.kbs(page=args.page, page_size=args.page_size)
     if args.command == "channels":
         return client.channels(args.knowledge_base_id)
     if args.command == "faqs":
@@ -93,7 +92,7 @@ def _format(args: argparse.Namespace, data: dict[str, Any]) -> str:
         return format_json(data)
     if args.command == "me":
         return format_detail(data)
-    if args.command == "knowledge-bases":
+    if args.command == "kbs":
         return format_records(data, title="知识库")
     if args.command == "channels":
         return format_records(data, title="渠道")
@@ -107,26 +106,6 @@ def _format(args: argparse.Namespace, data: dict[str, Any]) -> str:
 def _add_pagination(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--page", type=int, default=1, help="页码")
     parser.add_argument("--page-size", type=int, default=20, help="每页数量")
-
-
-def _normalize_legacy_command(argv: list[str]) -> list[str]:
-    normalized = list(argv)
-    skip_next = False
-    for index, value in enumerate(normalized):
-        if skip_next:
-            skip_next = False
-            continue
-        if value == "--config":
-            skip_next = True
-            continue
-        if value.startswith("--config="):
-            continue
-        if value == "spaces":
-            normalized[index] = "knowledge-bases"
-            break
-        if not value.startswith("-"):
-            break
-    return normalized
 
 
 if __name__ == "__main__":
