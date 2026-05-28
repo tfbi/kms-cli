@@ -80,6 +80,26 @@ def test_refresh_updates_current_token_without_printing_old_token(monkeypatch, t
     assert "old-token" not in prompts[0]
 
 
+def test_refresh_skips_persistence_when_current_token_source_is_env(monkeypatch, tmp_path):
+    monkeypatch.setenv("KNOWLEDGE_TOKEN", "env-token")
+    config_path = tmp_path / "config.toml"
+    config_path.write_text('base_url = "https://kms.example.test"\n', encoding="utf-8")
+
+    def fail_if_called(prompt: str) -> bool:
+        raise AssertionError("confirm_func should not be called for env token refresh")
+
+    manager = TokenManager(
+        make_config(tmp_path, token="config-token"),
+        input_func=lambda prompt: "new-token",
+        confirm_func=fail_if_called,
+    )
+
+    assert manager.get_token() == "env-token"
+    assert manager.refresh_token() == "new-token"
+    assert manager.get_token() == "new-token"
+    assert "token" not in tomllib.loads(config_path.read_text(encoding="utf-8"))
+
+
 def test_refresh_persists_new_token_when_confirmed(monkeypatch, tmp_path):
     monkeypatch.delenv("KNOWLEDGE_TOKEN", raising=False)
     config_path = tmp_path / "config.toml"
@@ -91,6 +111,24 @@ def test_refresh_persists_new_token_when_confirmed(monkeypatch, tmp_path):
     )
 
     assert manager.refresh_token() == "new-token"
+
+    parsed = tomllib.loads(config_path.read_text(encoding="utf-8"))
+    assert parsed["token"] == "new-token"
+
+
+def test_refresh_before_get_token_with_prompt_source_prompts_once(monkeypatch, tmp_path):
+    monkeypatch.delenv("KNOWLEDGE_TOKEN", raising=False)
+    config_path = tmp_path / "config.toml"
+    config_path.write_text('base_url = "https://kms.example.test"\n', encoding="utf-8")
+    prompts: list[str] = []
+    manager = TokenManager(
+        make_config(tmp_path, token=None),
+        input_func=lambda prompt: prompts.append(prompt) or "new-token",
+        confirm_func=lambda prompt: True,
+    )
+
+    assert manager.refresh_token() == "new-token"
+    assert prompts == ["Token 已过期或无权限，请输入新的 token: "]
 
     parsed = tomllib.loads(config_path.read_text(encoding="utf-8"))
     assert parsed["token"] == "new-token"

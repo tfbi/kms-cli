@@ -46,12 +46,39 @@ class TokenManager:
         return token
 
     def refresh_token(self) -> str:
+        previous_source = self._resolve_source_for_refresh()
+
         token = self._prompt_token("Token 已过期或无权限，请输入新的 token: ")
         self.source = "prompt"
         self._token = token
-        if self.confirm_func("是否把新 token 保存到配置文件？[y/N]: "):
+        if previous_source != "env" and self.confirm_func(
+            "是否把新 token 保存到配置文件？[y/N]: "
+        ):
             save_token(self.config.path, token)
         return token
+
+    def _resolve_source_for_refresh(self) -> str:
+        if self.source is not None:
+            return self.source
+
+        token = _normalize_token(self._token)
+        if token:
+            self._token = token
+            return "prompt"
+
+        env_token = _normalize_token(os.getenv("KNOWLEDGE_TOKEN"))
+        if env_token:
+            self.source = "env"
+            self._token = env_token
+            return "env"
+
+        config_token = _normalize_token(self.config.token)
+        if config_token:
+            self.source = "config"
+            self._token = config_token
+            return "config"
+
+        return "prompt"
 
     def _prompt_token(self, prompt: str = "请输入 token: ") -> str:
         token = _normalize_token(self.input_func(prompt))
