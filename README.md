@@ -57,7 +57,7 @@ token = "..."
 method = "GET"
 path = "/api/me"
 
-[endpoints.spaces]
+[endpoints.knowledge_bases]
 method = "POST"
 path = "/api/knowledge-bases"
 
@@ -86,11 +86,13 @@ $env:KNOWLEDGE_TOKEN = "在这里粘贴-token"
 
 ```bash
 kms me
-kms spaces --page 1 --page-size 20
+kms knowledge-bases --page 1 --page-size 20
 kms channels <knowledge_base_id>
 kms faqs <channel_id> --page 1 --page-size 20
 kms faq <faq_id>
 ```
+
+历史兼容：旧命令 `kms spaces` 仍然可以使用，但推荐使用 `kms knowledge-bases`。
 
 任意命令都可以追加 `--json` 输出原始 JSON：
 

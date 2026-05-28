@@ -24,7 +24,7 @@ token = "abc"
 method = "GET"
 path = "/me"
 
-[endpoints.spaces]
+[endpoints.knowledge_bases]
 method = "POST"
 path = "/spaces"
 
@@ -61,6 +61,39 @@ path = "/faq"
 def test_load_config_reports_missing_file(tmp_path):
     with pytest.raises(ConfigError, match="配置文件不存在"):
         load_config(tmp_path / "missing.toml")
+
+
+def test_load_config_accepts_legacy_spaces_endpoint(tmp_path):
+    config_path = write_config(
+        tmp_path / "config.toml",
+        """
+base_url = "https://kms.example.test"
+
+[endpoints.me]
+method = "GET"
+path = "/me"
+
+[endpoints.spaces]
+method = "POST"
+path = "/spaces"
+
+[endpoints.channels]
+method = "GET"
+path = "/channels"
+
+[endpoints.faqs]
+method = "POST"
+path = "/faqs"
+
+[endpoints.faq_detail]
+method = "GET"
+path = "/faq"
+""",
+    )
+
+    config = load_config(config_path)
+
+    assert config.endpoints["spaces"] == EndpointConfig(method="POST", path="/spaces")
 
 
 def test_load_config_requires_all_endpoints(tmp_path):

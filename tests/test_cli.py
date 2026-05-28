@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import sys
 
 import httpx
 
@@ -14,7 +15,7 @@ token = "abc"
 method = "GET"
 path = "/me"
 
-[endpoints.spaces]
+[endpoints.knowledge_bases]
 method = "POST"
 path = "/spaces"
 
@@ -53,7 +54,24 @@ def test_me_outputs_json(tmp_path, capsys):
     assert '"张三"' in capsys.readouterr().out
 
 
-def test_spaces_sends_pagination(tmp_path):
+def test_knowledge_bases_sends_pagination(tmp_path):
+    config_path = write_config(tmp_path)
+    seen = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["body"] = json.loads(request.content)
+        return httpx.Response(200, json={"items": []})
+
+    code = main(
+        ["--config", str(config_path), "knowledge-bases", "--page", "3", "--page-size", "40"],
+        transport=httpx.MockTransport(handler),
+    )
+
+    assert code == 0
+    assert seen["body"] == {"page": 3, "page_size": 40}
+
+
+def test_spaces_alias_still_sends_pagination(tmp_path):
     config_path = write_config(tmp_path)
     seen = {}
 
@@ -68,6 +86,37 @@ def test_spaces_sends_pagination(tmp_path):
 
     assert code == 0
     assert seen["body"] == {"page": 3, "page_size": 40}
+
+
+def test_spaces_alias_works_from_process_argv(tmp_path, monkeypatch):
+    config_path = write_config(tmp_path)
+    seen = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["body"] = json.loads(request.content)
+        return httpx.Response(200, json={"items": []})
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["kms", "--config", str(config_path), "spaces", "--page", "4", "--page-size", "30"],
+    )
+
+    code = main(transport=httpx.MockTransport(handler))
+
+    assert code == 0
+    assert seen["body"] == {"page": 4, "page_size": 30}
+
+
+def test_help_promotes_knowledge_bases_command(capsys):
+    try:
+        main(["--help"])
+    except SystemExit as exc:
+        assert exc.code == 0
+
+    output = capsys.readouterr().out
+    assert "knowledge-bases" in output
+    assert "spaces" not in output
 
 
 def test_channels_sends_query_parameter(tmp_path):
