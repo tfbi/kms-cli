@@ -15,29 +15,32 @@ from .formatters import format_detail, format_json, format_records
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="kms")
+    parser = argparse.ArgumentParser(prog="kms", add_help=False)
+    parser.add_argument("-h", "--help", action="help", help="显示帮助信息并退出")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG_PATH, help="配置文件路径")
+    parser._positionals.title = "命令"
+    parser._optionals.title = "选项"
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     me = subparsers.add_parser("me", help="查询当前用户信息")
-    me.add_argument("--json", action="store_true", dest="as_json")
+    me.add_argument("--json", action="store_true", dest="as_json", help="输出原始 JSON")
 
     spaces = subparsers.add_parser("spaces", help="分页获取知识库列表")
     _add_pagination(spaces)
-    spaces.add_argument("--json", action="store_true", dest="as_json")
+    spaces.add_argument("--json", action="store_true", dest="as_json", help="输出原始 JSON")
 
     channels = subparsers.add_parser("channels", help="获取指定知识库下的渠道列表")
-    channels.add_argument("knowledge_base_id")
-    channels.add_argument("--json", action="store_true", dest="as_json")
+    channels.add_argument("knowledge_base_id", help="知识库 ID")
+    channels.add_argument("--json", action="store_true", dest="as_json", help="输出原始 JSON")
 
     faqs = subparsers.add_parser("faqs", help="分页获取指定渠道下的 FAQ 列表")
-    faqs.add_argument("channel_id")
+    faqs.add_argument("channel_id", help="渠道 ID")
     _add_pagination(faqs)
-    faqs.add_argument("--json", action="store_true", dest="as_json")
+    faqs.add_argument("--json", action="store_true", dest="as_json", help="输出原始 JSON")
 
     faq = subparsers.add_parser("faq", help="获取指定 FAQ 详情")
-    faq.add_argument("faq_id")
-    faq.add_argument("--json", action="store_true", dest="as_json")
+    faq.add_argument("faq_id", help="FAQ ID")
+    faq.add_argument("--json", action="store_true", dest="as_json", help="输出原始 JSON")
 
     return parser
 
@@ -81,7 +84,7 @@ def _execute(args: argparse.Namespace, client: KnowledgeClient) -> dict[str, Any
         return client.faqs(args.channel_id, page=args.page, page_size=args.page_size)
     if args.command == "faq":
         return client.faq_detail(args.faq_id)
-    raise AssertionError(f"unknown command: {args.command}")
+    raise AssertionError(f"未知命令: {args.command}")
 
 
 def _format(args: argparse.Namespace, data: dict[str, Any]) -> str:
@@ -97,12 +100,12 @@ def _format(args: argparse.Namespace, data: dict[str, Any]) -> str:
         return format_records(data, title="FAQ")
     if args.command == "faq":
         return format_detail(data)
-    raise AssertionError(f"unknown command: {args.command}")
+    raise AssertionError(f"未知命令: {args.command}")
 
 
 def _add_pagination(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--page", type=int, default=1)
-    parser.add_argument("--page-size", type=int, default=20)
+    parser.add_argument("--page", type=int, default=1, help="页码")
+    parser.add_argument("--page-size", type=int, default=20, help="每页数量")
 
 
 if __name__ == "__main__":

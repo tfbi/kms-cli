@@ -138,14 +138,14 @@ def test_refresh_persists_new_token_when_confirmed(monkeypatch, tmp_path):
 def test_confirm_yes_accepts_yes_answers_case_insensitively(monkeypatch, answer):
     monkeypatch.setattr("builtins.input", lambda prompt: answer)
 
-    assert _confirm_yes("Save token? ") is True
+    assert _confirm_yes("保存 token？") is True
 
 
 @pytest.mark.parametrize("answer", ["", "n", "no", "NO", "anything else"])
 def test_confirm_yes_rejects_empty_and_no_like_answers(monkeypatch, answer):
     monkeypatch.setattr("builtins.input", lambda prompt: answer)
 
-    assert _confirm_yes("Save token? ") is False
+    assert _confirm_yes("保存 token？") is False
 
 
 def test_refresh_before_get_token_with_prompt_source_prompts_once(monkeypatch, tmp_path):
@@ -160,7 +160,7 @@ def test_refresh_before_get_token_with_prompt_source_prompts_once(monkeypatch, t
     )
 
     assert manager.refresh_token() == "new-token"
-    assert prompts == ["Token 已过期或无权限，请输入新的 token: "]
+    assert prompts == ["认证已过期或无权限，请输入新的 token: "]
 
     parsed = tomllib.loads(config_path.read_text(encoding="utf-8"))
     assert parsed["token"] == "new-token"

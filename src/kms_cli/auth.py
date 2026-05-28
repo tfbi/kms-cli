@@ -48,7 +48,7 @@ class TokenManager:
     def refresh_token(self) -> str:
         previous_source = self._resolve_source_for_refresh()
 
-        token = self._prompt_token("Token 已过期或无权限，请输入新的 token: ")
+        token = self._prompt_token("认证已过期或无权限，请输入新的 token: ")
         self.source = "prompt"
         self._token = token
         if previous_source != "env" and self.confirm_func(
