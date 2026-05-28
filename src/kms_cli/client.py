@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from types import TracebackType
 from typing import Any
 from urllib.parse import urljoin
 
@@ -20,10 +21,31 @@ class KnowledgeClient:
     ) -> None:
         self.config = config
         self.token = token
+        self.transport = transport
+        self.timeout = timeout
         self._client = httpx.Client(transport=transport, timeout=timeout)
 
     def with_token(self, token: str) -> KnowledgeClient:
-        return KnowledgeClient(self.config, token)
+        return KnowledgeClient(
+            self.config,
+            token,
+            transport=self.transport,
+            timeout=self.timeout,
+        )
+
+    def close(self) -> None:
+        self._client.close()
+
+    def __enter__(self) -> KnowledgeClient:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        self.close()
 
     def me(self) -> dict[str, Any]:
         return self._request("me")
