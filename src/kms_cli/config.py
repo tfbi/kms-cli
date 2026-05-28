@@ -31,11 +31,19 @@ def load_config(path: Path = DEFAULT_CONFIG_PATH) -> KmsConfig:
         raise ConfigError(f"配置文件不存在: {path}")
 
     try:
-        raw = tomllib.loads(path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        raise ConfigError(f"读取配置文件失败: {path}") from exc
+
+    try:
+        raw = tomllib.loads(text)
     except tomllib.TOMLDecodeError as exc:
         raise ConfigError(f"配置文件格式错误: {exc}") from exc
 
-    base_url = str(raw.get("base_url", "")).strip()
+    raw_base_url = raw.get("base_url")
+    if not isinstance(raw_base_url, str):
+        raise ConfigError("缺少必填配置: base_url")
+    base_url = raw_base_url.strip()
     if not base_url:
         raise ConfigError("缺少必填配置: base_url")
 
@@ -57,9 +65,11 @@ def load_config(path: Path = DEFAULT_CONFIG_PATH) -> KmsConfig:
         endpoints[name] = EndpointConfig(method=method, path=endpoint_path)
 
     token = raw.get("token")
+    if token is not None and not isinstance(token, str):
+        raise ConfigError("配置 token 必须是字符串")
     return KmsConfig(
         base_url=base_url.rstrip("/"),
-        token=str(token) if token else None,
+        token=token if token else None,
         endpoints=endpoints,
         path=path,
     )
@@ -85,6 +95,7 @@ def save_token(path: Path, token: str) -> None:
 
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
+    path.chmod(0o600)
 
 
 def _escape_toml_string(value: str) -> str:
