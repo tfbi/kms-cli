@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import os
 from pathlib import Path
 import re
 import tomllib
@@ -94,7 +95,11 @@ def save_token(path: Path, token: str) -> None:
         text = token_line + "\n" + text
 
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
+    if path.exists():
+        path.chmod(0o600)
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with open(fd, "w", encoding="utf-8") as file:
+        file.write(text)
     path.chmod(0o600)
 
 

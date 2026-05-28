@@ -192,6 +192,29 @@ def test_save_token_writes_config_with_private_permissions(tmp_path):
     assert stat.S_IMODE(config_path.stat().st_mode) == 0o600
 
 
+def test_save_token_tightens_existing_config_before_writing(tmp_path, monkeypatch):
+    config_path = write_config(
+        tmp_path / "config.toml",
+        """
+base_url = "https://kms.example.test"
+token = "old"
+""",
+    )
+    config_path.chmod(0o644)
+    original_write_text = Path.write_text
+
+    def guarded_write_text(self, *args, **kwargs):
+        if self == config_path:
+            assert stat.S_IMODE(self.stat().st_mode) == 0o600
+        return original_write_text(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "write_text", guarded_write_text)
+
+    save_token(config_path, "secret")
+
+    assert stat.S_IMODE(config_path.stat().st_mode) == 0o600
+
+
 def test_save_token_does_not_replace_nested_table_token(tmp_path):
     config_path = write_config(
         tmp_path / "config.toml",
