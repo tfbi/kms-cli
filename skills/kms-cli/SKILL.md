@@ -1,6 +1,6 @@
 ---
 name: kms-cli
-description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用、配置、说明、测试或排查内部知识中台 KMS CLI 时使用本技能，包括 Windows 单文件版 `kms.exe`、Python 版 `kms` 命令、token/config.toml 配置、查询用户信息、通过 `kbs` 查询知识库、查询渠道、FAQ 列表、FAQ 详情，以及 `knowledgeId`、`channelId`、`faqId`、`pageNo`、`pageSize` 的请求参数映射。
+description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用、配置、说明、测试或排查内部知识中台 KMS CLI 时使用本技能，包括 Windows 单文件版 `kms.exe`、token/config.toml 配置、查询用户信息、通过 `kbs` 查询知识库、查询渠道、FAQ 列表、FAQ 详情，以及 `knowledgeId`、`channelId`、`faqId`、`pageNo`、`pageSize` 的请求参数映射。
 ---
 
 # KMS CLI
@@ -15,9 +15,7 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 
 1. 确认用户是要使用、配置、修改或排查 KMS CLI。
 2. 先定位可执行命令：
-   - 在 Windows 的 Trae 环境中，优先使用 Go 单文件版 `.\kms.exe`，如果已经加入 `PATH`，也可以直接使用 `kms`。
-   - 如果使用 Python 版，安装后通常使用 `.\.venv\Scripts\kms.exe`。
-   - 在当前 macOS/Linux 仓库中，优先使用 `.venv/bin/kms`。
+   - 在 Windows 的 Trae 环境中使用 `.\kms.exe`，如果已经加入 `PATH`，也可以直接使用 `kms`。
    - 如果全局安装过，`kms` 也可能已经在 `PATH` 中。
 3. 发起真实请求前先检查配置：
    - Windows 默认配置路径是 `%USERPROFILE%\.kms\config.toml`。
@@ -46,4 +44,4 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 
 - 不要编造内部接口路径。读取或询问 `config.toml` 中的真实配置。
 - 不要记录 token，不要在最终回答里粘贴 token，也不要在示例里写真实 token。
-- 如果用户询问分发方式，优先推荐 Go 单文件版；Python 版除非额外打包，否则目标机器需要 Python 运行环境。
+- 如果用户询问分发方式，说明当前交付物是 Go 单文件版 `kms.exe`，目标机器不需要安装 Python、Go 或 Node.js。

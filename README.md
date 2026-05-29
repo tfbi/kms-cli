@@ -2,14 +2,14 @@
 
 用于访问内部知识中台的命令行工具。
 
-推荐在公司 Windows 电脑上使用 Go 单文件版 `kms.exe`，不需要安装 Python、Go 或 Node.js。
+公司 Windows 电脑上使用 Go 单文件版 `kms.exe`，不需要安装 Python、Go 或 Node.js。
 
 ## 环境要求
 
 - 能访问公司内部知识中台网络
 - 一个有效的用户认证 token
 
-## Windows 使用 Go 单文件版
+## Windows 使用
 
 PowerShell：
 
@@ -24,31 +24,10 @@ PowerShell：
 %USERPROFILE%\.kms\config.toml
 ```
 
-## Python 版安装
-
-如果需要使用或开发 Python 版，再安装 Python 3.10 或更高版本。
-
-Windows PowerShell：
-
-```powershell
-py -3.10 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install .
-```
-
-macOS 或 Linux：
+## 本地开发
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install .
-```
-
-如果需要本地开发和运行测试：
-
-```bash
-python -m pip install -e ".[dev]"
-python -m pytest -v
+go test ./...
 ```
 
 ## 配置文件
