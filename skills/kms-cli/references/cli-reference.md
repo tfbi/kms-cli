@@ -1,0 +1,106 @@
+# KMS CLI Reference
+
+## Installation
+
+Windows PowerShell:
+
+```powershell
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install .
+```
+
+macOS/Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install .
+```
+
+Development install:
+
+```bash
+python -m pip install -e ".[dev]"
+python -m pytest -v
+```
+
+## Config
+
+Default config paths:
+
+- Windows: `%USERPROFILE%\.kms\config.toml`
+- macOS/Linux: `~/.kms/config.toml`
+
+Example:
+
+```toml
+base_url = "https://internal.example.com"
+token = "..."
+
+[endpoints.me]
+method = "GET"
+path = "/api/me"
+
+[endpoints.kbs]
+method = "POST"
+path = "/api/kbs"
+
+[endpoints.channels]
+method = "GET"
+path = "/api/channels"
+
+[endpoints.faqs]
+method = "POST"
+path = "/api/faqs"
+
+[endpoints.faq_detail]
+method = "GET"
+path = "/api/faq/detail"
+```
+
+`KNOWLEDGE_TOKEN` takes priority over `token` in the config file.
+
+PowerShell token example:
+
+```powershell
+$env:KNOWLEDGE_TOKEN = "paste-token-here"
+```
+
+## Commands
+
+```bash
+kms me
+kms kbs --page 1 --page-size 20
+kms channels <knowledgeId>
+kms faqs <channelId> --page 1 --page-size 20
+kms faq <faqId>
+```
+
+Add `--json` to any command for raw JSON output:
+
+```bash
+kms me --json
+```
+
+Use a custom config file:
+
+```bash
+kms --config ./config.toml me
+```
+
+## Request Mapping
+
+| CLI command | HTTP method | Parameters sent |
+| --- | --- | --- |
+| `kms me` | GET | none |
+| `kms kbs --page 1 --page-size 20` | POST | JSON body: `{"pageNo": 1, "pageSize": 20}` |
+| `kms channels <knowledgeId>` | GET | query: `knowledgeId=<value>` |
+| `kms faqs <channelId> --page 1 --page-size 20` | POST | JSON body: `{"channelId": "...", "pageNo": 1, "pageSize": 20}` |
+| `kms faq <faqId>` | GET | query: `faqId=<value>` |
+
+## Expected Behavior
+
+- On HTTP `401` or `403`, the CLI asks the user to paste a new token and retries once.
+- If the new token should be reused, the CLI can save it back to config after confirmation.
+- Non-2xx responses, invalid JSON, and network failures should produce Chinese error messages.

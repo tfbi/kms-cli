@@ -1,0 +1,4 @@
+interface:
+  display_name: "KMS CLI"
+  short_description: "使用内部知识中台 kms 命令行工具"
+  default_prompt: "Use $kms-cli to query my KMS knowledge bases, channels, FAQs, or FAQ details."
