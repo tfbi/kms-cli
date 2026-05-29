@@ -96,7 +96,7 @@ kms --config ./config.toml me
 | --- | --- | --- |
 | `kms me` | GET | 不传业务参数 |
 | `kms kbs --page 1 --page-size 10` | POST | JSON body: `{"pageNo": 1, "pageSize": 10}` |
-| `kms channels <knowledgeId>` | GET | query: `knowledgeId=<value>` |
+| `kms channels <knowledgeId>` | GET | query: `knowledgeId=<value>&type=1&authorityType=0` |
 | `kms faqs <channelId> --page 1 --page-size 10` | POST | JSON body: `{"channelId": "...", "pageNo": 1, "pageSize": 10}` |
 | `kms faq <faqId>` | GET | query: `faqId=<value>` |
 

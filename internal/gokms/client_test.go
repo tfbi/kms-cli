@@ -66,7 +66,7 @@ func TestClientSendsExpectedParameters(t *testing.T) {
 	if _, err := client.Channels("kb-1"); err != nil {
 		t.Fatal(err)
 	}
-	if seenMethod != "GET" || seenPath != "/channels?knowledgeId=kb-1" {
+	if seenMethod != "GET" || seenPath != "/channels?authorityType=0&knowledgeId=kb-1&type=1" {
 		t.Fatalf("channels request = %s %s", seenMethod, seenPath)
 	}
 

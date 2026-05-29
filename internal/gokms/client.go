@@ -49,7 +49,11 @@ func (c *Client) Kbs(page int, pageSize int) (map[string]any, error) {
 }
 
 func (c *Client) Channels(knowledgeID string) (map[string]any, error) {
-	return c.request("channels", map[string]string{"knowledgeId": knowledgeID}, nil)
+	return c.request("channels", map[string]string{
+		"authorityType": "0",
+		"knowledgeId":   knowledgeID,
+		"type":          "1",
+	}, nil)
 }
 
 func (c *Client) FAQs(channelID string, page int, pageSize int) (map[string]any, error) {
