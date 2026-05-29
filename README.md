@@ -4,7 +4,7 @@
 
 ## 环境要求
 
-- Python 3.11 或更高版本
+- Python 3.10 或更高版本
 - 能访问公司内部知识中台网络
 - 一个有效的用户认证 token
 
@@ -13,7 +13,7 @@
 PowerShell：
 
 ```powershell
-py -3.11 -m venv .venv
+py -3.10 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install .
 ```

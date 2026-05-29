@@ -17,7 +17,7 @@ When Trae asks for commands, prefer Windows PowerShell examples.
 Windows PowerShell:
 
 ```powershell
-py -3.11 -m venv .venv
+py -3.10 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install .
 ```
