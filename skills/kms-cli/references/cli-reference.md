@@ -6,13 +6,24 @@ This skill is meant to run inside Trae on the company Windows computer. Copy the
 
 The skill does not bundle the CLI executable. Before using the skill in Trae, make sure one of these is true:
 
+- The Go single-file executable `kms.exe` exists in the working directory.
 - The Python project is installed in a virtual environment and `.\.venv\Scripts\kms.exe` exists.
 - `kms.exe` is packaged separately and available on `PATH`.
 - The current terminal can run `kms --help`.
 
 When Trae asks for commands, prefer Windows PowerShell examples.
 
-## Installation
+## Go Single-File Usage
+
+Windows PowerShell:
+
+```powershell
+.\kms.exe --help
+.\kms.exe me
+.\kms.exe kbs --page 1 --page-size 20
+```
+
+## Python Installation
 
 Windows PowerShell:
 

@@ -1,16 +1,34 @@
 # KMS CLI
 
-用于访问内部知识中台的 Python 命令行工具。
+用于访问内部知识中台的命令行工具。
+
+推荐在公司 Windows 电脑上使用 Go 单文件版 `kms.exe`，不需要安装 Python、Go 或 Node.js。
 
 ## 环境要求
 
-- Python 3.10 或更高版本
 - 能访问公司内部知识中台网络
 - 一个有效的用户认证 token
 
-## Windows 安装
+## Windows 使用 Go 单文件版
 
 PowerShell：
+
+```powershell
+.\kms.exe --help
+.\kms.exe me
+```
+
+配置文件仍然放在：
+
+```text
+%USERPROFILE%\.kms\config.toml
+```
+
+## Python 版安装
+
+如果需要使用或开发 Python 版，再安装 Python 3.10 或更高版本。
+
+Windows PowerShell：
 
 ```powershell
 py -3.10 -m venv .venv
@@ -18,14 +36,7 @@ py -3.10 -m venv .venv
 python -m pip install .
 ```
 
-如果需要本地开发和运行测试：
-
-```powershell
-python -m pip install -e ".[dev]"
-python -m pytest -v
-```
-
-## macOS 或 Linux 安装
+macOS 或 Linux：
 
 ```bash
 python3 -m venv .venv
