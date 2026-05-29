@@ -35,6 +35,7 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 - CLI 分页参数保持命令行友好形式：`--page` 和 `--page-size`。
 - 实际 HTTP 请求字段不同：发送 `pageNo`、`pageSize`、`knowledgeId`、`channelId`、`faqId`。
 - 渠道列表请求固定追加查询参数：`type=1`、`authorityType=0`。
+- FAQ 列表请求固定追加 body 参数：`type=1`、`authorityType=0`。
 - 所有 HTTP 请求都固定携带请求头 `tenant-id: 2`。
 - 知识库和渠道是父子关系：一个知识库可以有多个渠道。
 - `kbs` 是知识库命令。不要使用旧命令名 `knowledge-bases` 或 `spaces`。

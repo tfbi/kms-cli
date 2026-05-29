@@ -89,7 +89,7 @@ CLI 会按以下字段名请求内部接口：
 - 所有请求：HTTP header 固定传 `tenant-id: 2`
 - 知识库列表：POST body 传 `pageNo`、`pageSize`
 - 渠道列表：GET query 传 `knowledgeId`，并固定传 `type=1`、`authorityType=0`
-- FAQ 列表：POST body 传 `channelId`、`pageNo`、`pageSize`
+- FAQ 列表：POST body 传 `channelId`、`pageNo`、`pageSize`，并固定传 `type=1`、`authorityType=0`
 - FAQ 详情：GET query 传 `faqId`
 
 任意命令都可以追加 `--json` 输出原始 JSON：

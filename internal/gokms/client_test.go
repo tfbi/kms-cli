@@ -73,7 +73,12 @@ func TestClientSendsExpectedParameters(t *testing.T) {
 	if _, err := client.FAQs("ch-1", 2, 10); err != nil {
 		t.Fatal(err)
 	}
-	if seenMethod != "POST" || seenBody["channelId"] != "ch-1" || seenBody["pageNo"] != float64(2) || seenBody["pageSize"] != float64(10) {
+	if seenMethod != "POST" ||
+		seenBody["channelId"] != "ch-1" ||
+		seenBody["pageNo"] != float64(2) ||
+		seenBody["pageSize"] != float64(10) ||
+		seenBody["type"] != float64(1) ||
+		seenBody["authorityType"] != float64(0) {
 		t.Fatalf("faqs request = %s %#v", seenMethod, seenBody)
 	}
 
