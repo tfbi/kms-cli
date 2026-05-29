@@ -39,11 +39,13 @@ func testClientConfig(baseURL string) Config {
 func TestClientSendsExpectedParameters(t *testing.T) {
 	var seenMethod string
 	var seenPath string
+	var seenTenant string
 	var seenBody map[string]any
 
 	httpClient := &http.Client{Transport: roundTripFunc(func(request *http.Request) (*http.Response, error) {
 		seenMethod = request.Method
 		seenPath = request.URL.RequestURI()
+		seenTenant = request.Header.Get("tenant-id")
 		if request.Body != nil {
 			_ = json.NewDecoder(request.Body).Decode(&seenBody)
 		}
@@ -56,6 +58,9 @@ func TestClientSendsExpectedParameters(t *testing.T) {
 	}
 	if seenMethod != "POST" || seenBody["pageNo"] != float64(3) || seenBody["pageSize"] != float64(40) {
 		t.Fatalf("kbs request = %s %#v", seenMethod, seenBody)
+	}
+	if seenTenant != "2" {
+		t.Fatalf("tenant-id = %q", seenTenant)
 	}
 
 	if _, err := client.Channels("kb-1"); err != nil {
@@ -77,5 +82,22 @@ func TestClientSendsExpectedParameters(t *testing.T) {
 	}
 	if seenMethod != "GET" || seenPath != "/faq?faqId=faq-1" {
 		t.Fatalf("faq request = %s %s", seenMethod, seenPath)
+	}
+}
+
+func TestClientDefaultPaginationUsesPageSizeTen(t *testing.T) {
+	var seenBody map[string]any
+	httpClient := &http.Client{Transport: roundTripFunc(func(request *http.Request) (*http.Response, error) {
+		_ = json.NewDecoder(request.Body).Decode(&seenBody)
+		return jsonResponse(200, `{"items":[]}`), nil
+	})}
+	client := NewClientWithHTTP(testClientConfig("https://kms.example.test"), "abc", httpClient)
+
+	if _, err := client.Kbs(1, 10); err != nil {
+		t.Fatal(err)
+	}
+
+	if seenBody["pageNo"] != float64(1) || seenBody["pageSize"] != float64(10) {
+		t.Fatalf("default pagination body = %#v", seenBody)
 	}
 }

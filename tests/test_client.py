@@ -29,6 +29,7 @@ def test_get_channels_uses_query_params():
     def handler(request: httpx.Request) -> httpx.Response:
         seen["method"] = request.method
         seen["authorization"] = request.headers["authorization"]
+        seen["tenant_id"] = request.headers["tenant-id"]
         seen["url"] = str(request.url)
         return httpx.Response(200, json={"items": []})
 
@@ -37,6 +38,7 @@ def test_get_channels_uses_query_params():
     assert client.channels("kb-1") == {"items": []}
     assert seen["method"] == "GET"
     assert seen["authorization"] == "Bearer abc"
+    assert seen["tenant_id"] == "2"
     assert seen["url"] == "https://kms.example.test/channels?knowledgeId=kb-1"
 
 
@@ -56,6 +58,22 @@ def test_post_faqs_uses_json_body_with_pagination():
     assert seen["method"] == "POST"
     assert seen["content_type"].startswith("application/json")
     assert seen["body"] == {"channelId": "ch-1", "pageNo": 2, "pageSize": 50}
+
+
+def test_default_pagination_uses_page_size_ten():
+    seen = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["body"] = json.loads(request.content)
+        seen["tenant_id"] = request.headers["tenant-id"]
+        return httpx.Response(200, json={"items": []})
+
+    client = KnowledgeClient(make_config(), token="abc", transport=httpx.MockTransport(handler))
+
+    client.kbs()
+
+    assert seen["body"] == {"pageNo": 1, "pageSize": 10}
+    assert seen["tenant_id"] == "2"
 
 
 def test_raises_auth_error_for_401():

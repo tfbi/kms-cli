@@ -61,7 +61,7 @@ func Run(argv []string, httpClient *http.Client, stdin io.Reader, stdout io.Writ
 }
 
 func parseArgs(argv []string, stdout io.Writer) (commandOptions, bool, error) {
-	options := commandOptions{configPath: DefaultConfigPath(), page: 1, pageSize: 20}
+	options := commandOptions{configPath: DefaultConfigPath(), page: 1, pageSize: 10}
 	index := 0
 	for index < len(argv) {
 		arg := argv[index]

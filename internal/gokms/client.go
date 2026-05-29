@@ -90,6 +90,7 @@ func (c *Client) request(endpointName string, params map[string]string, body map
 		return nil, err
 	}
 	req.Header.Set("Authorization", "Bearer "+c.token)
+	req.Header.Set("tenant-id", "2")
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}

@@ -76,9 +76,9 @@ $env:KNOWLEDGE_TOKEN = "在这里粘贴-token"
 
 ```bash
 kms me
-kms kbs --page 1 --page-size 20
+kms kbs --page 1 --page-size 10
 kms channels <knowledgeId>
-kms faqs <channelId> --page 1 --page-size 20
+kms faqs <channelId> --page 1 --page-size 10
 kms faq <faqId>
 ```
 
@@ -86,6 +86,7 @@ kms faq <faqId>
 
 CLI 会按以下字段名请求内部接口：
 
+- 所有请求：HTTP header 固定传 `tenant-id: 2`
 - 知识库列表：POST body 传 `pageNo`、`pageSize`
 - 渠道列表：GET query 传 `knowledgeId`
 - FAQ 列表：POST body 传 `channelId`、`pageNo`、`pageSize`

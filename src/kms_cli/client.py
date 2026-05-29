@@ -50,13 +50,13 @@ class KnowledgeClient:
     def me(self) -> dict[str, Any]:
         return self._request("me")
 
-    def kbs(self, *, page: int = 1, page_size: int = 20) -> dict[str, Any]:
+    def kbs(self, *, page: int = 1, page_size: int = 10) -> dict[str, Any]:
         return self._request("kbs", json_body={"pageNo": page, "pageSize": page_size})
 
     def channels(self, knowledge_base_id: str) -> dict[str, Any]:
         return self._request("channels", params={"knowledgeId": knowledge_base_id})
 
-    def faqs(self, channel_id: str, *, page: int = 1, page_size: int = 20) -> dict[str, Any]:
+    def faqs(self, channel_id: str, *, page: int = 1, page_size: int = 10) -> dict[str, Any]:
         return self._request(
             "faqs",
             json_body={"channelId": channel_id, "pageNo": page, "pageSize": page_size},
@@ -74,7 +74,7 @@ class KnowledgeClient:
     ) -> dict[str, Any]:
         endpoint = self.config.endpoints[endpoint_name]
         url = _join_url(self.config.base_url, endpoint.path)
-        headers = {"Authorization": f"Bearer {self.token}"}
+        headers = {"Authorization": f"Bearer {self.token}", "tenant-id": "2"}
         try:
             response = self._client.request(
                 endpoint.method,

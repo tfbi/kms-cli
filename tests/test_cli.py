@@ -70,6 +70,25 @@ def test_kbs_sends_pagination(tmp_path):
     assert seen["body"] == {"pageNo": 3, "pageSize": 40}
 
 
+def test_kbs_default_pagination_uses_page_size_ten(tmp_path):
+    config_path = write_config(tmp_path)
+    seen = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["body"] = json.loads(request.content)
+        seen["tenant_id"] = request.headers["tenant-id"]
+        return httpx.Response(200, json={"items": []})
+
+    code = main(
+        ["--config", str(config_path), "kbs"],
+        transport=httpx.MockTransport(handler),
+    )
+
+    assert code == 0
+    assert seen["body"] == {"pageNo": 1, "pageSize": 10}
+    assert seen["tenant_id"] == "2"
+
+
 def test_help_promotes_kbs_command(capsys):
     try:
         main(["--help"])
@@ -164,6 +183,7 @@ def test_auth_failure_prompts_for_new_token_and_retries(tmp_path):
 
     def handler(request: httpx.Request) -> httpx.Response:
         calls.append(request.headers["Authorization"])
+        assert request.headers["tenant-id"] == "2"
         if len(calls) == 1:
             return httpx.Response(401, json={"error": "expired"})
         return httpx.Response(200, json={"id": "u1"})

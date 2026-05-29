@@ -19,7 +19,7 @@ PowerShell 示例：
 ```powershell
 .\kms.exe --help
 .\kms.exe me
-.\kms.exe kbs --page 1 --page-size 20
+.\kms.exe kbs --page 1 --page-size 10
 ```
 
 公司 Windows 电脑不需要安装 Python、Go 或 Node.js。
@@ -70,9 +70,9 @@ $env:KNOWLEDGE_TOKEN = "在这里粘贴-token"
 
 ```bash
 kms me
-kms kbs --page 1 --page-size 20
+kms kbs --page 1 --page-size 10
 kms channels <knowledgeId>
-kms faqs <channelId> --page 1 --page-size 20
+kms faqs <channelId> --page 1 --page-size 10
 kms faq <faqId>
 ```
 
@@ -90,12 +90,14 @@ kms --config ./config.toml me
 
 ## 请求参数映射
 
+所有请求都会固定携带 HTTP header：`tenant-id: 2`。
+
 | CLI 命令 | HTTP 方法 | 实际发送参数 |
 | --- | --- | --- |
 | `kms me` | GET | 不传业务参数 |
-| `kms kbs --page 1 --page-size 20` | POST | JSON body: `{"pageNo": 1, "pageSize": 20}` |
+| `kms kbs --page 1 --page-size 10` | POST | JSON body: `{"pageNo": 1, "pageSize": 10}` |
 | `kms channels <knowledgeId>` | GET | query: `knowledgeId=<value>` |
-| `kms faqs <channelId> --page 1 --page-size 20` | POST | JSON body: `{"channelId": "...", "pageNo": 1, "pageSize": 20}` |
+| `kms faqs <channelId> --page 1 --page-size 10` | POST | JSON body: `{"channelId": "...", "pageNo": 1, "pageSize": 10}` |
 | `kms faq <faqId>` | GET | query: `faqId=<value>` |
 
 ## 预期行为

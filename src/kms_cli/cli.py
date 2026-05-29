@@ -105,7 +105,7 @@ def _format(args: argparse.Namespace, data: dict[str, Any]) -> str:
 
 def _add_pagination(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--page", type=int, default=1, help="页码")
-    parser.add_argument("--page-size", type=int, default=20, help="每页数量")
+    parser.add_argument("--page-size", type=int, default=10, help="每页数量")
 
 
 def _add_subparser(
