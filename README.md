@@ -79,7 +79,7 @@ kms me
 kms kbs --page 1 --page-size 10
 kms channels <knowledgeId>
 kms faqs <channelId> --page 1 --page-size 10
-kms faq <faqId>
+kms faq <channelId> <faqId>
 ```
 
 ## 请求参数
@@ -90,7 +90,7 @@ CLI 会按以下字段名请求内部接口：
 - 知识库列表：POST body 传 `pageNo`、`pageSize`
 - 渠道列表：GET query 传 `knowledgeId`，并固定传 `type=1`、`authorityType=0`
 - FAQ 列表：POST body 传 `channelId`、`categoryId`、`pageNo`、`pageSize`，其中 `categoryId` 和 `channelId` 值相同
-- FAQ 详情：GET query 传 `faqId`
+- FAQ 详情：GET query 传 `channelId`、`faqId`
 
 任意命令都可以追加 `--json` 输出原始 JSON：
 

@@ -65,8 +65,8 @@ func (c *Client) FAQs(channelID string, page int, pageSize int) (map[string]any,
 	})
 }
 
-func (c *Client) FAQDetail(faqID string) (map[string]any, error) {
-	return c.request("faq_detail", map[string]string{"faqId": faqID}, nil)
+func (c *Client) FAQDetail(channelID string, faqID string) (map[string]any, error) {
+	return c.request("faq_detail", map[string]string{"channelId": channelID, "faqId": faqID}, nil)
 }
 
 func (c *Client) request(endpointName string, params map[string]string, body map[string]any) (map[string]any, error) {

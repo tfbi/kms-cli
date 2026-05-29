@@ -26,7 +26,7 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
    - `kms kbs`
    - `kms channels <knowledgeId>`
    - `kms faqs <channelId>`
-   - `kms faq <faqId>`
+   - `kms faq <channelId> <faqId>`
 5. 用户需要脚本处理或查看原始响应时，给命令追加 `--json`。
 6. 如果请求返回认证失败，让 CLI 提示用户输入新 token，或建议设置 `KNOWLEDGE_TOKEN`。
 

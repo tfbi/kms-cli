@@ -73,7 +73,7 @@ kms me
 kms kbs --page 1 --page-size 10
 kms channels <knowledgeId>
 kms faqs <channelId> --page 1 --page-size 10
-kms faq <faqId>
+kms faq <channelId> <faqId>
 ```
 
 任意命令都可以追加 `--json`，用于输出原始 JSON：
@@ -98,7 +98,7 @@ kms --config ./config.toml me
 | `kms kbs --page 1 --page-size 10` | POST | JSON body: `{"pageNo": 1, "pageSize": 10}` |
 | `kms channels <knowledgeId>` | GET | query: `knowledgeId=<value>&type=1&authorityType=0` |
 | `kms faqs <channelId> --page 1 --page-size 10` | POST | JSON body: `{"channelId": "...", "categoryId": "...", "pageNo": 1, "pageSize": 10}`，其中 `categoryId` 和 `channelId` 值相同 |
-| `kms faq <faqId>` | GET | query: `faqId=<value>` |
+| `kms faq <channelId> <faqId>` | GET | query: `channelId=<value>&faqId=<value>` |
 
 ## 预期行为
 

@@ -83,10 +83,10 @@ func TestClientSendsExpectedParameters(t *testing.T) {
 		t.Fatalf("faqs request = %s %#v", seenMethod, seenBody)
 	}
 
-	if _, err := client.FAQDetail("faq-1"); err != nil {
+	if _, err := client.FAQDetail("ch-1", "faq-1"); err != nil {
 		t.Fatal(err)
 	}
-	if seenMethod != "GET" || seenPath != "/faq?faqId=faq-1" {
+	if seenMethod != "GET" || seenPath != "/faq?channelId=ch-1&faqId=faq-1" {
 		t.Fatalf("faq request = %s %s", seenMethod, seenPath)
 	}
 }

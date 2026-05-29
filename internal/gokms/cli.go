@@ -133,9 +133,13 @@ func parseCommandOptions(options *commandOptions) error {
 		if len(positionals) != 0 {
 			return fmt.Errorf("命令 %s 不需要参数", options.command)
 		}
-	case "channels", "faqs", "faq":
+	case "channels", "faqs":
 		if len(positionals) != 1 {
 			return fmt.Errorf("命令 %s 需要 1 个参数", options.command)
+		}
+	case "faq":
+		if len(positionals) != 2 {
+			return fmt.Errorf("命令 faq 需要 2 个参数")
 		}
 	default:
 		return fmt.Errorf("未知命令: %s", options.command)
@@ -166,7 +170,7 @@ func execute(options commandOptions, client *Client) (map[string]any, error) {
 	case "faqs":
 		return client.FAQs(options.args[0], options.page, options.pageSize)
 	case "faq":
-		return client.FAQDetail(options.args[0])
+		return client.FAQDetail(options.args[0], options.args[1])
 	default:
 		return nil, fmt.Errorf("未知命令: %s", options.command)
 	}
@@ -213,7 +217,7 @@ func printCommandHelp(writer io.Writer, command string) {
 	case "faqs":
 		_, _ = fmt.Fprint(writer, "usage: kms faqs [-h] [--page PAGE] [--page-size PAGE_SIZE] [--json] channelId\n\n参数:\n  channelId             渠道 ID\n\n选项:\n  -h, --help            显示帮助信息并退出\n  --page PAGE           页码\n  --page-size PAGE_SIZE 每页数量\n  --json                输出原始 JSON\n")
 	case "faq":
-		_, _ = fmt.Fprint(writer, "usage: kms faq [-h] [--json] faqId\n\n参数:\n  faqId       FAQ ID\n\n选项:\n  -h, --help  显示帮助信息并退出\n  --json      输出原始 JSON\n")
+		_, _ = fmt.Fprint(writer, "usage: kms faq [-h] [--json] channelId faqId\n\n参数:\n  channelId   渠道 ID\n  faqId       FAQ ID\n\n选项:\n  -h, --help  显示帮助信息并退出\n  --json      输出原始 JSON\n")
 	default:
 		printMainHelp(writer)
 	}
