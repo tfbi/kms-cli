@@ -1,5 +1,17 @@
 # KMS CLI Reference
 
+## Trae Usage
+
+This skill is meant to run inside Trae on the company Windows computer. Copy the `kms-cli` skill folder into the Trae skill location used by that environment.
+
+The skill does not bundle the CLI executable. Before using the skill in Trae, make sure one of these is true:
+
+- The Python project is installed in a virtual environment and `.\.venv\Scripts\kms.exe` exists.
+- `kms.exe` is packaged separately and available on `PATH`.
+- The current terminal can run `kms --help`.
+
+When Trae asks for commands, prefer Windows PowerShell examples.
+
 ## Installation
 
 Windows PowerShell:
