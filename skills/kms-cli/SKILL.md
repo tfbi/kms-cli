@@ -45,4 +45,4 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 
 - 不要编造内部接口路径。读取或询问 `config.toml` 中的真实配置。
 - 不要记录 token，不要在最终回答里粘贴 token，也不要在示例里写真实 token。
-- 如果用户询问分发方式，说明当前交付物是 Go 单文件版 `kms.exe`，目标机器不需要安装 Python、Go 或 Node.js。
+- 如果用户询问分发方式，说明当前交付物是 Go 单文件版 `kms.exe`，目标机器无需安装额外运行时。

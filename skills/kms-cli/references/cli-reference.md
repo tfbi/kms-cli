@@ -22,7 +22,7 @@ PowerShell 示例：
 .\kms.exe kbs --page 1 --page-size 10
 ```
 
-公司 Windows 电脑不需要安装 Python、Go 或 Node.js。
+公司 Windows 电脑无需安装额外运行时。
 
 ## 配置文件
 

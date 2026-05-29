@@ -2,7 +2,7 @@
 
 用于访问内部知识中台的命令行工具。
 
-公司 Windows 电脑上使用 Go 单文件版 `kms.exe`，不需要安装 Python、Go 或 Node.js。
+公司 Windows 电脑上使用 Go 单文件版 `kms.exe`，无需安装额外运行时。
 
 ## 环境要求
 
