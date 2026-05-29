@@ -74,11 +74,12 @@ func TestClientSendsExpectedParameters(t *testing.T) {
 		t.Fatal(err)
 	}
 	if seenMethod != "POST" ||
+		seenBody["categoryId"] != "ch-1" ||
 		seenBody["channelId"] != "ch-1" ||
 		seenBody["pageNo"] != float64(2) ||
 		seenBody["pageSize"] != float64(10) ||
-		seenBody["type"] != float64(1) ||
-		seenBody["authorityType"] != float64(0) {
+		seenBody["type"] != nil ||
+		seenBody["authorityType"] != nil {
 		t.Fatalf("faqs request = %s %#v", seenMethod, seenBody)
 	}
 
