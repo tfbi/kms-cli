@@ -16,7 +16,7 @@ func FormatRecords(data map[string]any, title string) string {
 	for _, record := range records {
 		if item, ok := record.(map[string]any); ok {
 			recordID := pick(item, "id", "faqId", "faq_id", "channelId", "channel_id", "knowledgeId", "knowledge_base_id")
-			name := pick(item, "name", "title")
+			name := pick(item, "name", "title", "question", "questionTitle", "standardQuestion", "faqName")
 			if recordID != "" && name != "" {
 				lines = append(lines, "- "+recordID+"\t"+name)
 			} else if name != "" {
@@ -32,7 +32,7 @@ func FormatRecords(data map[string]any, title string) string {
 }
 
 func extractRecords(data map[string]any) []any {
-	for _, key := range []string{"items", "records", "data", "list"} {
+	for _, key := range []string{"items", "records", "rows", "data", "list"} {
 		value, ok := data[key]
 		if !ok {
 			continue
