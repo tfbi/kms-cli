@@ -32,7 +32,7 @@ func FormatRecords(data map[string]any, title string) string {
 }
 
 func extractRecords(data map[string]any) []any {
-	for _, key := range []string{"items", "records", "rows", "data", "list"} {
+	for _, key := range []string{"items", "records", "rows", "dataList", "data", "list"} {
 		value, ok := data[key]
 		if !ok {
 			continue
