@@ -1,20 +1,20 @@
-# KMS CLI Reference
+# KMS CLI 参考说明
 
-## Trae Usage
+## Trae 使用场景
 
-This skill is meant to run inside Trae on the company Windows computer. Copy the `kms-cli` skill folder into the Trae skill location used by that environment.
+这个技能主要用于公司 Windows 电脑上的 Trae 环境。使用时，把 `kms-cli` 技能目录复制到 Trae 当前支持的技能目录中。
 
-The skill does not bundle the CLI executable. Before using the skill in Trae, make sure one of these is true:
+这个技能本身不包含 CLI 可执行文件。在 Trae 中使用前，请确认满足以下任意一种情况：
 
-- The Go single-file executable `kms.exe` exists in the working directory.
-- `kms.exe` is packaged separately and available on `PATH`.
-- The current terminal can run `kms --help`.
+- Go 单文件版 `kms.exe` 已经放在当前工作目录。
+- `kms.exe` 已经单独分发，并且所在目录已加入 `PATH`。
+- 当前终端可以正常运行 `kms --help`。
 
-When Trae asks for commands, prefer Windows PowerShell examples.
+当 Trae 需要给出命令示例时，优先使用 Windows PowerShell 写法。
 
-## Windows Usage
+## Windows 使用
 
-Windows PowerShell:
+PowerShell 示例：
 
 ```powershell
 .\kms.exe --help
@@ -22,16 +22,16 @@ Windows PowerShell:
 .\kms.exe kbs --page 1 --page-size 20
 ```
 
-No Python, Go, or Node.js runtime is required on the company Windows computer.
+公司 Windows 电脑不需要安装 Python、Go 或 Node.js。
 
-## Config
+## 配置文件
 
-Default config paths:
+默认配置路径：
 
 - Windows: `%USERPROFILE%\.kms\config.toml`
 - macOS/Linux: `~/.kms/config.toml`
 
-Example:
+配置示例：
 
 ```toml
 base_url = "https://internal.example.com"
@@ -58,15 +58,15 @@ method = "GET"
 path = "/api/faq/detail"
 ```
 
-`KNOWLEDGE_TOKEN` takes priority over `token` in the config file.
+环境变量 `KNOWLEDGE_TOKEN` 的优先级高于配置文件中的 `token`。
 
-PowerShell token example:
+PowerShell 设置 token 示例：
 
 ```powershell
-$env:KNOWLEDGE_TOKEN = "paste-token-here"
+$env:KNOWLEDGE_TOKEN = "在这里粘贴-token"
 ```
 
-## Commands
+## 命令
 
 ```bash
 kms me
@@ -76,30 +76,30 @@ kms faqs <channelId> --page 1 --page-size 20
 kms faq <faqId>
 ```
 
-Add `--json` to any command for raw JSON output:
+任意命令都可以追加 `--json`，用于输出原始 JSON：
 
 ```bash
 kms me --json
 ```
 
-Use a custom config file:
+使用自定义配置文件：
 
 ```bash
 kms --config ./config.toml me
 ```
 
-## Request Mapping
+## 请求参数映射
 
-| CLI command | HTTP method | Parameters sent |
+| CLI 命令 | HTTP 方法 | 实际发送参数 |
 | --- | --- | --- |
-| `kms me` | GET | none |
+| `kms me` | GET | 不传业务参数 |
 | `kms kbs --page 1 --page-size 20` | POST | JSON body: `{"pageNo": 1, "pageSize": 20}` |
 | `kms channels <knowledgeId>` | GET | query: `knowledgeId=<value>` |
 | `kms faqs <channelId> --page 1 --page-size 20` | POST | JSON body: `{"channelId": "...", "pageNo": 1, "pageSize": 20}` |
 | `kms faq <faqId>` | GET | query: `faqId=<value>` |
 
-## Expected Behavior
+## 预期行为
 
-- On HTTP `401` or `403`, the CLI asks the user to paste a new token and retries once.
-- If the new token should be reused, the CLI can save it back to config after confirmation.
-- Non-2xx responses, invalid JSON, and network failures should produce Chinese error messages.
+- HTTP `401` 或 `403` 会被视为认证失败，CLI 会提示用户输入新 token，并自动重试一次。
+- 如果新 token 需要复用，CLI 会询问是否写回配置文件。
+- 非 2xx 响应、非法 JSON、网络失败等情况会输出中文错误信息。
