@@ -114,6 +114,15 @@ kms --config ./config.toml me
 | `kms faqs <channelId> --json` | 获取指定渠道下的 FAQ 列表 | 从返回 JSON 中选择 `faqId`，同时保留当前 `channelId` |
 | `kms faq <channelId> <faqId> --json` | 获取指定 FAQ 的详情 | 基于完整 JSON 回答用户问题 |
 
+## 分页规则
+
+- `kms kbs` 和 `kms faqs` 都支持 `--page`、`--page-size`。
+- 不传分页参数时，默认查询第一页、每页 10 条。
+- 大模型需要根据返回 JSON 自己判断是否继续翻页，常见字段包括 `total`、`pageNum`、`pageNo`、`pageSize`、`dataList`。
+- 如果用户要查找某个 FAQ、某类问题或某个关键词，第一页没找到时，不要直接回答“没有”；先根据 `total` 和 `pageSize` 计算是否还有下一页。
+- 下一页示例：`kms faqs <channelId> --page 2 --page-size 10 --json`。
+- 当已经查完所有页，仍然没有命中，再告诉用户没有找到匹配内容。
+
 ## 给 Trae 的使用提醒
 
 - 不要直接猜 `knowledgeId`、`channelId`、`faqId`，这些 ID 必须来自上一步命令返回。

@@ -21,6 +21,7 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 - 不知道 `channelId` 时，先用 `knowledgeId` 运行 `kms channels <knowledgeId> --json`。
 - 不知道 `faqId` 时，先用 `channelId` 运行 `kms faqs <channelId> --json`。
 - 查 FAQ 详情必须同时传 `channelId` 和 `faqId`：`kms faq <channelId> <faqId> --json`。
+- 遇到分页列表时，大模型必须根据用户目标和返回里的 `total`、`pageNum`、`pageNo`、`pageSize`、`dataList` 等字段自己判断是否继续翻页；不要只查第一页就说没有。
 
 ## 命令用途
 
@@ -39,6 +40,7 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 3. 查询渠道：`kms channels <knowledgeId> --json`，从返回结果里找 `channelId`。
 4. 查询 FAQ 列表：`kms faqs <channelId> --json`，从返回结果里找 `faqId` 和 `title`。
 5. 查询 FAQ 详情：`kms faq <channelId> <faqId> --json`，再基于完整 JSON 回答用户。
+6. 如果当前页没有找到目标，但返回显示还有下一页，继续加 `--page <下一页>` 查询，直到找到目标或所有页查完。
 
 ## 工作流程
 
@@ -62,6 +64,7 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 ## 关键规则
 
 - CLI 分页参数保持命令行友好形式：`--page` 和 `--page-size`。
+- 默认分页是第一页、每页 10 条；需要继续查询时由大模型自己计算下一页，例如 `--page 2 --page-size 10`。
 - 实际 HTTP 请求字段不同：发送 `pageNo`、`pageSize`、`knowledgeId`、`channelId`、`categoryId`、`faqId`。
 - 渠道列表请求固定追加查询参数：`type=1`、`authorityType=0`。
 - FAQ 列表请求固定追加 body 参数：`categoryId`，值和 `channelId` 相同。
