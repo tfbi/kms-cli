@@ -4,9 +4,11 @@
 
 这个技能主要用于公司 Windows 电脑上的 Trae 环境。使用时，把 `kms-cli` 技能目录复制到 Trae 当前支持的技能目录中。
 
-这个技能本身不包含 CLI 可执行文件。在 Trae 中使用前，请确认满足以下任意一种情况：
+这个技能已经包含常用平台的 CLI 可执行文件。在 Trae 中使用前，请确认满足以下任意一种情况：
 
 - Go 单文件版 `kms.exe` 已经放在 `skills/kms-cli/bin/`。
+- macOS Apple Silicon 版 `kms-darwin-arm64` 已经放在 `skills/kms-cli/bin/`。
+- Linux/CentOS x86_64 版 `kms-linux-amd64` 已经放在 `skills/kms-cli/bin/`。
 - `kms.exe` 已经单独分发，并且所在目录已加入 `PATH`。
 - 当前终端可以正常运行 `kms --help`。
 
@@ -20,7 +22,8 @@ skills/kms-cli/
     kms.exe              # Windows 可执行文件
     kms.ps1              # Windows PowerShell 包装脚本
     kms.sh               # Linux/CentOS/macOS shell 包装脚本
-    kms-linux-amd64      # Linux/CentOS 可执行文件，编译后放这里
+    kms-darwin-arm64     # macOS Apple Silicon 可执行文件
+    kms-linux-amd64      # Linux/CentOS x86_64 可执行文件
   config/
     config.toml.example  # 配置模板
     config.toml          # 真实配置，本文件不要提交
@@ -34,13 +37,13 @@ skills/kms-cli/
 
 Windows 下不要直接调用 `kms.exe`。`kms.ps1` 会在执行前把 PowerShell 输出编码和控制台代码页切到 UTF-8，减少 Trae 沙箱里中文响应乱码。
 
-Linux / CentOS 示例：
+macOS / Linux / CentOS 示例：
 
 ```bash
 ./skills/kms-cli/bin/kms.sh me --json
 ```
 
-包装脚本会优先使用 `skills/kms-cli/config/config.toml`。如果这个文件不存在，CLI 会使用系统默认配置路径。
+`kms.sh` 会根据系统自动选择 `kms-darwin-arm64` 或 `kms-linux-amd64`。包装脚本会优先使用 `skills/kms-cli/config/config.toml`。如果这个文件不存在，CLI 会使用系统默认配置路径。
 
 ## Windows 使用
 
@@ -53,6 +56,21 @@ PowerShell 示例：
 ```
 
 公司 Windows 电脑无需安装额外运行时。
+
+## macOS / Linux 使用
+
+macOS Apple Silicon、Linux/CentOS x86_64 都优先使用同一个 shell 包装脚本：
+
+```bash
+chmod +x ./skills/kms-cli/bin/kms.sh
+./skills/kms-cli/bin/kms.sh --help
+./skills/kms-cli/bin/kms.sh me --json
+```
+
+当前内置二进制：
+
+- macOS Apple Silicon: `skills/kms-cli/bin/kms-darwin-arm64`
+- Linux/CentOS x86_64: `skills/kms-cli/bin/kms-linux-amd64`
 
 ## 配置文件
 

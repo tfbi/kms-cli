@@ -26,6 +26,14 @@ PowerShell：
 
 包装脚本会优先读取 `skills\kms-cli\config\config.toml`，并把 PowerShell 输出切到 UTF-8，减少中文乱码。真实配置可从 `skills\kms-cli\config\config.toml.example` 复制生成。
 
+macOS / Linux / CentOS 使用：
+
+```bash
+./skills/kms-cli/bin/kms.sh me --json
+```
+
+`kms.sh` 会自动选择 macOS Apple Silicon 的 `kms-darwin-arm64` 或 Linux/CentOS x86_64 的 `kms-linux-amd64`。
+
 配置文件仍然放在：
 
 ```text

@@ -15,7 +15,7 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 
 - 优先使用 skill 目录里的包装脚本，不要求用户配置 PATH。
 - Windows / PowerShell 使用：`.\skills\kms-cli\bin\kms.ps1 ...`。
-- Linux / CentOS / macOS shell 使用：`./skills/kms-cli/bin/kms.sh ...`。
+- macOS / Linux / CentOS shell 使用：`./skills/kms-cli/bin/kms.sh ...`。
 - Windows 下不要直接执行 `kms.exe`，优先执行 `kms.ps1`，脚本会把控制台输出切到 UTF-8，减少中文乱码。
 - 不要猜接口路径，必须读取或让用户提供 `config.toml`。
 - 不要输出真实 token，不要把 token 写进回答。
@@ -52,7 +52,8 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 1. 确认用户是要使用、配置、修改或排查 KMS CLI。
 2. 先定位可执行命令：
    - 在 Windows 的 Trae 环境中优先使用 `.\skills\kms-cli\bin\kms.ps1`。
-   - 在 Linux / CentOS / macOS shell 中优先使用 `./skills/kms-cli/bin/kms.sh`。
+   - 在 macOS / Linux / CentOS shell 中优先使用 `./skills/kms-cli/bin/kms.sh`。
+   - `kms.sh` 会根据当前系统自动选择 `kms-darwin-arm64` 或 `kms-linux-amd64`。
    - 如果用户明确说已经加入 `PATH`，也可以直接使用 `kms`。
 3. 发起真实请求前先检查配置：
    - skill 内置配置模板：`skills/kms-cli/config/config.toml.example`。
@@ -89,4 +90,4 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 - 不要编造内部接口路径。读取或询问 `config.toml` 中的真实配置。
 - 不要记录 token，不要在最终回答里粘贴 token，也不要在示例里写真实 token。
 - 不要在回答里暴露 `config.toml` 中的真实 `base_url`、接口 path 或 token。
-- 如果用户询问分发方式，说明当前交付物是 Go 单文件版 `kms.exe`，Windows 目标机器无需安装额外运行时。
+- 如果用户询问分发方式，说明当前交付物是 Go 单文件版二进制：Windows 用 `kms.exe`，macOS Apple Silicon 用 `kms-darwin-arm64`，Linux/CentOS x86_64 用 `kms-linux-amd64`，目标机器无需安装额外运行时。
