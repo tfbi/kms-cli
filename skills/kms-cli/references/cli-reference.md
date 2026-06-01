@@ -6,20 +6,48 @@
 
 这个技能本身不包含 CLI 可执行文件。在 Trae 中使用前，请确认满足以下任意一种情况：
 
-- Go 单文件版 `kms.exe` 已经放在当前工作目录。
+- Go 单文件版 `kms.exe` 已经放在 `skills/kms-cli/bin/`。
 - `kms.exe` 已经单独分发，并且所在目录已加入 `PATH`。
 - 当前终端可以正常运行 `kms --help`。
 
 当 Trae 需要给出命令示例时，优先使用 Windows PowerShell 写法。
+
+## Skill 内置目录
+
+```text
+skills/kms-cli/
+  bin/
+    kms.exe              # Windows 可执行文件
+    kms.ps1              # Windows PowerShell 包装脚本
+    kms.sh               # Linux/CentOS/macOS shell 包装脚本
+    kms-linux-amd64      # Linux/CentOS 可执行文件，编译后放这里
+  config/
+    config.toml.example  # 配置模板
+    config.toml          # 真实配置，本文件不要提交
+```
+
+优先让 Trae 调用包装脚本：
+
+```powershell
+.\skills\kms-cli\bin\kms.ps1 me --json
+```
+
+Linux / CentOS 示例：
+
+```bash
+./skills/kms-cli/bin/kms.sh me --json
+```
+
+包装脚本会优先使用 `skills/kms-cli/config/config.toml`。如果这个文件不存在，CLI 会使用系统默认配置路径。
 
 ## Windows 使用
 
 PowerShell 示例：
 
 ```powershell
-.\kms.exe --help
-.\kms.exe me
-.\kms.exe kbs --page 1 --page-size 10
+.\skills\kms-cli\bin\kms.ps1 --help
+.\skills\kms-cli\bin\kms.ps1 me --json
+.\skills\kms-cli\bin\kms.ps1 kbs --page 1 --page-size 10 --json
 ```
 
 公司 Windows 电脑无需安装额外运行时。
@@ -35,7 +63,7 @@ PowerShell 示例：
 
 ```toml
 base_url = "https://internal.example.com"
-token = "..."
+token = ""
 
 [endpoints.me]
 method = "GET"
@@ -59,6 +87,12 @@ path = "/api/faq/detail"
 ```
 
 环境变量 `KNOWLEDGE_TOKEN` 的优先级高于配置文件中的 `token`。
+
+token 读取顺序：
+
+1. 先读环境变量 `KNOWLEDGE_TOKEN`。
+2. 环境变量没有时，读取配置文件里的 `token`。
+3. 配置文件也没有时，CLI 提示手动输入。
 
 PowerShell 设置 token 示例：
 

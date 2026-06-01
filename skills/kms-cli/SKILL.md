@@ -13,8 +13,12 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 
 ## 给 Trae 的强制规则
 
+- 优先使用 skill 目录里的包装脚本，不要求用户配置 PATH。
+- Windows / PowerShell 使用：`.\skills\kms-cli\bin\kms.ps1 ...`。
+- Linux / CentOS / macOS shell 使用：`./skills/kms-cli/bin/kms.sh ...`。
 - 不要猜接口路径，必须读取或让用户提供 `config.toml`。
 - 不要输出真实 token，不要把 token 写进回答。
+- token 优先来自环境变量 `KNOWLEDGE_TOKEN`；没有环境变量时，CLI 再读取配置文件里的 `token`；还没有时，CLI 会提示手动输入。
 - 如果用户是让你“分析、总结、查找、提取答案”，运行命令时优先追加 `--json`，拿完整 JSON 给模型分析。
 - 如果用户只是想人工查看列表，可以不加 `--json`，CLI 会输出简短列表。
 - 不知道 `knowledgeId` 时，先运行 `kms kbs --json`。
@@ -46,11 +50,13 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 
 1. 确认用户是要使用、配置、修改或排查 KMS CLI。
 2. 先定位可执行命令：
-   - 在 Windows 的 Trae 环境中使用 `.\kms.exe`，如果已经加入 `PATH`，也可以直接使用 `kms`。
-   - 如果全局安装过，`kms` 也可能已经在 `PATH` 中。
+   - 在 Windows 的 Trae 环境中优先使用 `.\skills\kms-cli\bin\kms.ps1`。
+   - 在 Linux / CentOS / macOS shell 中优先使用 `./skills/kms-cli/bin/kms.sh`。
+   - 如果用户明确说已经加入 `PATH`，也可以直接使用 `kms`。
 3. 发起真实请求前先检查配置：
-   - Windows 默认配置路径是 `%USERPROFILE%\.kms\config.toml`。
-   - macOS/Linux 默认配置路径是 `~/.kms/config.toml`。
+   - skill 内置配置模板：`skills/kms-cli/config/config.toml.example`。
+   - 推荐把模板复制为 `skills/kms-cli/config/config.toml`，包装脚本会自动使用它。
+   - 如果没有 skill 目录下的配置文件，CLI 会回退到默认配置路径：Windows `%USERPROFILE%\.kms\config.toml`，macOS/Linux `~/.kms/config.toml`。
    - 不要打印或暴露 token 值。
 4. 按用户需求运行最小必要命令。给 AI 分析时默认追加 `--json`：
    - `kms me`
@@ -75,9 +81,11 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 - GET 请求使用普通 query 参数，不使用路径参数。
 - POST 请求使用 JSON body。
 - 这个技能只告诉 AI 助手如何使用 KMS CLI；公司电脑上仍然需要存在 `kms.exe` 和配置文件。
+- 禁止直接调用 KMS HTTP 接口；必须通过 `kms.exe`、`kms.ps1` 或 `kms.sh`。
 
 ## 安全要求
 
 - 不要编造内部接口路径。读取或询问 `config.toml` 中的真实配置。
 - 不要记录 token，不要在最终回答里粘贴 token，也不要在示例里写真实 token。
-- 如果用户询问分发方式，说明当前交付物是 Go 单文件版 `kms.exe`，目标机器无需安装额外运行时。
+- 不要在回答里暴露 `config.toml` 中的真实 `base_url`、接口 path 或 token。
+- 如果用户询问分发方式，说明当前交付物是 Go 单文件版 `kms.exe`，Windows 目标机器无需安装额外运行时。

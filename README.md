@@ -18,6 +18,14 @@ PowerShell：
 .\kms.exe me
 ```
 
+如果和 skill 一起分发，推荐直接使用 skill 目录里的包装脚本，不需要配置 PATH：
+
+```powershell
+.\skills\kms-cli\bin\kms.ps1 me --json
+```
+
+包装脚本会优先读取 `skills\kms-cli\config\config.toml`。真实配置可从 `skills\kms-cli\config\config.toml.example` 复制生成。
+
 配置文件仍然放在：
 
 ```text
@@ -41,7 +49,7 @@ go test ./...
 
 ```toml
 base_url = "https://internal.example.com"
-token = "..."
+token = ""
 
 [endpoints.me]
 method = "GET"
@@ -65,6 +73,12 @@ path = "/api/faq/detail"
 ```
 
 环境变量 `KNOWLEDGE_TOKEN` 的优先级高于配置文件里的 `token`。
+
+token 读取顺序：
+
+1. 环境变量 `KNOWLEDGE_TOKEN`
+2. 配置文件里的 `token`
+3. 手动输入
 
 PowerShell 示例：
 

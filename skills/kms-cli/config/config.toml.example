@@ -1,0 +1,25 @@
+# 复制本文件为 config.toml 后填写真实配置。
+# 不要把真实 token 提交到代码仓库或发给大模型。
+
+base_url = "https://internal.example.com"
+token = ""
+
+[endpoints.me]
+method = "GET"
+path = "/api/me"
+
+[endpoints.kbs]
+method = "POST"
+path = "/api/kbs"
+
+[endpoints.channels]
+method = "GET"
+path = "/api/channels"
+
+[endpoints.faqs]
+method = "POST"
+path = "/api/faqs"
+
+[endpoints.faq_detail]
+method = "GET"
+path = "/api/faq/detail"

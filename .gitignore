@@ -1,3 +1,4 @@
 .DS_Store
 build/
 dist/
+skills/kms-cli/config/config.toml
