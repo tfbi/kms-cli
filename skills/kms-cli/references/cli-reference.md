@@ -76,10 +76,14 @@ kms faqs <channelId> --page 1 --page-size 10
 kms faq <channelId> <faqId>
 ```
 
-任意命令都可以追加 `--json`，用于输出原始 JSON：
+任意命令都可以追加 `--json`，用于输出原始 JSON。Trae 或其他大模型需要分析、总结、提取答案时，优先使用 `--json`：
 
 ```bash
 kms me --json
+kms kbs --json
+kms channels <knowledgeId> --json
+kms faqs <channelId> --json
+kms faq <channelId> <faqId> --json
 ```
 
 使用自定义配置文件：
@@ -99,6 +103,23 @@ kms --config ./config.toml me
 | `kms channels <knowledgeId>` | GET | query: `knowledgeId=<value>&type=1&authorityType=0` |
 | `kms faqs <channelId> --page 1 --page-size 10` | POST | JSON body: `{"channelId": "...", "categoryId": "...", "pageNo": 1, "pageSize": 10}`，其中 `categoryId` 和 `channelId` 值相同 |
 | `kms faq <channelId> <faqId>` | GET | query: `channelId=<value>&faqId=<value>` |
+
+## 每个命令具体做什么
+
+| 命令 | 作用 | 下一步通常做什么 |
+| --- | --- | --- |
+| `kms me --json` | 查询当前 token 对应的用户信息，也可以用来验证 token 是否可用 | 如果认证失败，按 CLI 提示输入新 token |
+| `kms kbs --json` | 获取当前用户有权限访问的知识库列表 | 从返回 JSON 中选择 `knowledgeId` |
+| `kms channels <knowledgeId> --json` | 获取指定知识库下的渠道列表 | 从返回 JSON 中选择 `channelId` |
+| `kms faqs <channelId> --json` | 获取指定渠道下的 FAQ 列表 | 从返回 JSON 中选择 `faqId`，同时保留当前 `channelId` |
+| `kms faq <channelId> <faqId> --json` | 获取指定 FAQ 的详情 | 基于完整 JSON 回答用户问题 |
+
+## 给 Trae 的使用提醒
+
+- 不要直接猜 `knowledgeId`、`channelId`、`faqId`，这些 ID 必须来自上一步命令返回。
+- 如果用户问“某个问题怎么处理”，优先查 FAQ 列表，再查命中的 FAQ 详情。
+- 如果用户没有给出明确知识库或渠道，先从 `kms kbs --json` 和 `kms channels <knowledgeId> --json` 开始缩小范围。
+- 给模型分析时使用 `--json`，不要只依赖普通列表输出。
 
 ## 预期行为
 
