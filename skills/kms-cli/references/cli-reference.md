@@ -32,6 +32,8 @@ skills/kms-cli/
 .\skills\kms-cli\bin\kms.ps1 me --json
 ```
 
+Windows 下不要直接调用 `kms.exe`。`kms.ps1` 会在执行前把 PowerShell 输出编码和控制台代码页切到 UTF-8，减少 Trae 沙箱里中文响应乱码。
+
 Linux / CentOS 示例：
 
 ```bash

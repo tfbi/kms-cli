@@ -24,7 +24,7 @@ PowerShell：
 .\skills\kms-cli\bin\kms.ps1 me --json
 ```
 
-包装脚本会优先读取 `skills\kms-cli\config\config.toml`。真实配置可从 `skills\kms-cli\config\config.toml.example` 复制生成。
+包装脚本会优先读取 `skills\kms-cli\config\config.toml`，并把 PowerShell 输出切到 UTF-8，减少中文乱码。真实配置可从 `skills\kms-cli\config\config.toml.example` 复制生成。
 
 配置文件仍然放在：
 

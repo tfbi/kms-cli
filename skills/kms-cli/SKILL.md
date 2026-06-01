@@ -16,6 +16,7 @@ description: 当 Trae、Codex 或类似编码环境里的 AI 助手需要使用�
 - 优先使用 skill 目录里的包装脚本，不要求用户配置 PATH。
 - Windows / PowerShell 使用：`.\skills\kms-cli\bin\kms.ps1 ...`。
 - Linux / CentOS / macOS shell 使用：`./skills/kms-cli/bin/kms.sh ...`。
+- Windows 下不要直接执行 `kms.exe`，优先执行 `kms.ps1`，脚本会把控制台输出切到 UTF-8，减少中文乱码。
 - 不要猜接口路径，必须读取或让用户提供 `config.toml`。
 - 不要输出真实 token，不要把 token 写进回答。
 - token 优先来自环境变量 `KNOWLEDGE_TOKEN`；没有环境变量时，CLI 再读取配置文件里的 `token`；还没有时，CLI 会提示手动输入。
